@@ -48,6 +48,24 @@ variable "webserver_instance_type" {
   default     = "t3.micro"
 }
 
+variable "scheduler_instance_type" {
+  description = "Instance type for the Airflow Scheduler."
+  type        = string
+  default     = "t3.micro"
+}
+
+variable "worker_instance_type" {
+  description = "Instance type for the Airflow workers."
+  type        = string
+  default     = "t3.small"
+}
+
+variable "number_of_workers" {
+  description = "Number of workers for Airflow Cluster"
+  type = string
+  default = 1
+}
+
 variable "ami" {
   description = "Default is `Ubuntu Server 18.04 LTS (HVM), SSD Volume Type.`"
   type        = string
@@ -69,4 +87,28 @@ variable "root_volume_size" {
 variable "root_volume_delete_on_termination" {
   description = "Whether the volume should be destroyed on instance termination."
   default     = true
+}
+
+#DB VARIABLES------------------------------------
+variable "db_instance_type" {
+  description = "Instance type for PostgreSQL database"
+  type = string
+  default = "db.t2.micro"
+}
+
+variable "db_dbname" {
+  description = "PostgreSQL database name"
+  type = string
+  default = "airflow"
+}
+
+variable "db_username" {
+  description = "PostgreSQL database username"
+  type = string
+  default = "airflow"
+}
+
+variable "db_password" {
+  description = "PostgreSQL database password"
+  type = string
 }

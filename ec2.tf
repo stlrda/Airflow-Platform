@@ -46,7 +46,7 @@ resource "aws_security_group" "ec2-sg" {
 #----------------------------------
 #Create ec2 instances
 #----------------------------------
-resource "aws_instance" "airflow_webserver" { #TODO need to add provisioners (see PowerDataHub-terraform-aws-airflow/main.tf, line 121)
+resource "aws_instance" "airflow_webserver" { #TODO need to setup start scripts (see PowerDataHub-terraform-aws-airflow/main.tf, line 121)
   count = 1
 
   instance_type = var.webserver_instance_type
@@ -56,9 +56,51 @@ resource "aws_instance" "airflow_webserver" { #TODO need to add provisioners (se
   iam_instance_profile = aws_iam_instance_profile.airflow_profile.name
   associate_public_ip_address = true
   volume_tags = var.tags
+  tags = var.tags
+
+  lifecycle {create_before_destroy = true}
 
   root_block_device {
     volume_type = var.root_volume_type
-    volume_size = var.
+    volume_size = var.root_volume_size
   }
 }
+
+resource "aws_instance" "airflow_scheduler" { #TODO need to setup start scripts
+  count = 1
+  instance_type = var.scheduler_instance_type
+  ami = var.ami
+  key_name = var.ec2_keypair_name
+  vpc_security_group_ids = aws_security_group.ec2-sg.id
+  iam_instance_profile = aws_iam_instance_profile.airflow_profile.name
+  associate_public_ip_address = true
+  volume_tags = var.tags
+  tags = var.tags
+
+  lifecycle {create_before_destroy = true}
+
+  root_block_device {
+    volume_type = var.root_volume_type
+    volume_size = var.root_volume_size
+  }
+}
+
+resource "aws_instance" "airflow_worker" { #TODO need to setup start scripts
+  count = var.number_of_workers
+  instance_type = var.worker_instance_type
+  ami = var.ami
+  key_name = var.ec2_keypair_name
+  vpc_security_group_ids = aws_security_group.ec2-sg.id
+  iam_instance_profile = aws_iam_instance_profile.airflow_profile.name
+  associate_public_ip_address = true
+  volume_tags = var.tags
+  tags = var.tags
+
+  lifecycle {create_before_destroy = true}
+
+  root_block_device {
+    volume_type = var.root_volume_type
+    volume_size = var.root_volume_size
+  }
+}
+
