@@ -5,10 +5,10 @@ resource "aws_security_group" "db-sg" {
   name = "${var.cluster_name}-db-sg"
   count = 1
   description = "Security group for airflow rds instance"
-  vpc_id = var.vpc_id
+  vpc_id = ${aws_vpc.airflow_vpc.id}
   tags = var.tags
 
-  ingress {  #TODO Figure out cidr blocks?
+  ingress {  #TODO Verify Cidr blocks
     from_port = 80
     to_port =80
     protocol = "tcp"
@@ -53,7 +53,17 @@ resource "aws_security_group" "db-sg" {
 }
 
 #----------------------------------
-#Create rds instance #TODO Needs subnet group
+#Create rds subnet group
+#----------------------------------
+resource "aws_db_subnet_group" "rds_subnet_group" {
+  name = "${var.cluster_name}-subnet-group"
+  subnet_ids = [aws_subnet.airflow_subnet.id]
+  tags = var.tags
+}
+
+
+#----------------------------------
+#Create rds instance
 #----------------------------------
 resource "aws_db_instance" "airflow_database" {
   identifier = "${var.cluster_name}-db"
@@ -71,5 +81,5 @@ resource "aws_db_instance" "airflow_database" {
   skip_final_snapshot = true
   vpc_security_group_ids = [aws_security_group.db-sg.id]
   port = 5432
-  db_subnet_group_name = ""
+  db_subnet_group_name = aws_db_subnet_group.rds_subnet_group.name
 }

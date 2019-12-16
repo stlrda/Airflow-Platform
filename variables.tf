@@ -35,12 +35,6 @@ variable "public_key_path" {
   type = string
   default = "~/.ssh/id_rsa.pub"
 }
-#NETWORKING VARIABLES-------------------------
-variable "vpc_id" {
-  description = "ID for the vpc that will house the cluster."
-  type = string
-}
-
 #EC2 VARIABLES (APPLY TO ALL EC2 INSTANCES UNLESSS OTHERWISE SPECIFIED)--------------------------
 variable "webserver_instance_type" {
   description = "Instance type for the Airflow Webserver."

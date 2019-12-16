@@ -5,10 +5,10 @@ resource "aws_security_group" "ec2-sg" {
   name = "${var.cluster_name}-sg"
   count = 1
   description = "Security group for airflow ec2 instances"
-  vpc_id = var.vpc_id
+  vpc_id = "${aws_vpc.airflow_vpc.id}"
   tags = var.tags
 
-  ingress {  #TODO Figure out cidr blocks?
+  ingress {
     from_port = 80
     to_port =80
     protocol = "tcp"
@@ -31,7 +31,7 @@ resource "aws_security_group" "ec2-sg" {
     description = "SSH"
     cidr_blocks = ["0.0.0.0/0"]
   }
-    egress {
+  egress {
     from_port = 0
     to_port = 0
     protocol = "-1"
