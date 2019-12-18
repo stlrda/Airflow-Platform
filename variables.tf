@@ -6,7 +6,7 @@ variable "cluster_name" {
 
 variable "tags" {
   description = "Tags applied to all Airflow related objects"
-  type = "map"
+  type = map
   default = {
     "Project" = "Airflow"
   }

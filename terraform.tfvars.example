@@ -1,0 +1,3 @@
+#Universal
+region = "us-east-2"
+vpc_availability_zones

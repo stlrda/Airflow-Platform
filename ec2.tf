@@ -20,7 +20,7 @@ resource "aws_security_group" "ec2-sg" {
     from_port = 443
     to_port = 443
     protocol = "tcp"
-    description = "HTTPS
+    description = "HTTPS"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
