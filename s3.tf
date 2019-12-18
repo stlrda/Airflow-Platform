@@ -3,9 +3,9 @@
 #----------------------------------
 
 resource "aws_s3_bucket" "airflow_logs" {
-  bucket = "${var.cluster_name}-logs"
-  acl = "private"
+  bucket        = "${var.cluster_name}-logs"
+  acl           = "private"
   force_destroy = true
-  region = var.aws_region
-  tags = var.tags
+  region        = var.aws_region
+  tags          = var.tags
 }
