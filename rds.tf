@@ -5,7 +5,7 @@ resource "aws_security_group" "db-sg" {
   name = "${var.cluster_name}-db-sg"
   count = 1
   description = "Security group for airflow rds instance"
-  vpc_id = ${aws_vpc.airflow_vpc.id}
+  vpc_id = aws_vpc.airflow_vpc.id
   tags = var.tags
 
   ingress {  #TODO Verify Cidr blocks
@@ -20,7 +20,7 @@ resource "aws_security_group" "db-sg" {
     from_port = 443
     to_port = 443
     protocol = "tcp"
-    description = "HTTPS
+    description = "HTTPS"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
