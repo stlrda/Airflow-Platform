@@ -11,6 +11,7 @@ variable "tags" {
     "Project" = "Airflow"
   }
 }
+
 #ADMINISTRATION AND CREDENTIAL VARIABLES------------------
 variable "aws_region" {
   description = "AWS Region"
@@ -35,6 +36,39 @@ variable "public_key_path" {
   type        = string
   default     = "~/.ssh/id_rsa.pub"
 }
+
+variable "private_key_path" {
+  description = "Enter the path to the SSH Private Key to use for ec2 instances."
+  type        = string
+  default     = "~/.ssh/id_rsa.pub"
+}
+
+variable "admin_name" {
+  description = "Name of the administrator for the airflow cluster"
+  type = string
+  default = "admin"
+}
+
+variable "admin_lastname" {
+  description = "Last name of the adminstrator for the airflow cluster"
+  type = string
+  default = "admin"
+}
+
+variable "admin_email" {
+  description = "Email address for the administrator for the airflow cluster"
+  type = string
+}
+
+variable "admin_username" {
+  description = "Username for the administrator for the airflow cluster"
+  type = string
+}
+
+variable "admin_password" {
+  description = "Password for teh adminstrator for the airflow cluster"
+}
+
 #EC2 VARIABLES (APPLY TO ALL EC2 INSTANCES UNLESSS OTHERWISE SPECIFIED)--------------------------
 variable "webserver_instance_type" {
   description = "Instance type for the Airflow Webserver."
@@ -105,4 +139,33 @@ variable "db_username" {
 variable "db_password" {
   description = "PostgreSQL database password"
   type        = string
+}
+
+variable "fernet_key" {
+  description = "Key for encrypting data in the database - see Airflow docs."
+  type = string
+}
+#EC2 Provisioner Variables-----------------------
+data "template_file" "provisisioner" {
+  template = file("${path.module}/files/cloud-init.sh")
+
+  vars = {
+    AWS_REGION         = var.aws_region
+    FERNET_KEY         = var.fernet_key
+    LOAD_EXAMPLE_DAGS  = true
+    LOAD_DEFAULT_CONNS = true
+    RBAC               = true
+    ADMIN_NAME         = var.admin_name
+    ADMIN_LASTNAME     = var.admin_lastname
+    ADMIN_EMAIL        = var.admin_email
+    ADMIN_USERNAME     = var.admin_username
+    ADMIN_PASSWORD     = var.admin_password
+    DB_USERNAME        = var.db_username
+    DB_PASSWORD        = var.db_password
+    DB_ENDPOINT        = aws_db_instance.airflow_database.endpoint
+    DB_DBNAME          = var.db_dbname
+    S3_BUCKET          = aws_s3_bucket.airflow_logs.id
+    # WEBSERVER_HOST     = "${aws_instance.airflow_webserver.public_dns}"
+    WEBSERVER_PORT = 8080
+    QUEUE_NAME     = "${var.cluster_name}-queue"
 }
