@@ -3,7 +3,7 @@
 #----------------------------------
 resource "aws_security_group" "db-sg" {
   name        = "${var.cluster_name}-db-sg"
-  count       = 1
+#  count       = 1
   description = "Security group for airflow rds instance"
   vpc_id      = aws_vpc.airflow_vpc.id
   tags        = var.tags

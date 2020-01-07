@@ -3,7 +3,7 @@
 #----------------------------------
 resource "aws_security_group" "ec2-sg" {
   name        = "${var.cluster_name}-sg"
-  count       = 1
+#  count       = 1
   description = "Security group for airflow ec2 instances"
   vpc_id      = "${aws_vpc.airflow_vpc.id}"
   tags        = var.tags
@@ -51,7 +51,7 @@ resource "aws_instance" "airflow_webserver" { #TODO need to setup start scripts 
   instance_type               = var.webserver_instance_type
   ami                         = var.ami
   key_name                    = var.ec2_keypair_name
-  vpc_security_group_ids      = aws_security_group.ec2-sg.id
+  vpc_security_group_ids      = ["${aws_security_group.ec2-sg.id}"]
   iam_instance_profile        = aws_iam_instance_profile.airflow_profile.name
   associate_public_ip_address = true
   volume_tags                 = var.tags
@@ -110,7 +110,7 @@ resource "aws_instance" "airflow_webserver" { #TODO need to setup start scripts 
   }
 
   user_data= data.template_file.provisisioner.rendered
-  tags = var.tags
+
 }
 
 resource "aws_instance" "airflow_scheduler" { #TODO need to setup start scripts
@@ -118,7 +118,7 @@ resource "aws_instance" "airflow_scheduler" { #TODO need to setup start scripts
   instance_type               = var.scheduler_instance_type
   ami                         = var.ami
   key_name                    = var.ec2_keypair_name
-  vpc_security_group_ids      = aws_security_group.ec2-sg.id
+  vpc_security_group_ids      = ["${aws_security_group.ec2-sg.id}"]
   iam_instance_profile        = aws_iam_instance_profile.airflow_profile.name
   associate_public_ip_address = true
   volume_tags                 = var.tags
@@ -177,7 +177,7 @@ resource "aws_instance" "airflow_scheduler" { #TODO need to setup start scripts
   }
 
   user_data= data.template_file.provisisioner.rendered
-  tags = var.tags
+
 }
 
 resource "aws_instance" "airflow_worker" { #TODO need to setup start scripts
@@ -185,7 +185,7 @@ resource "aws_instance" "airflow_worker" { #TODO need to setup start scripts
   instance_type               = var.worker_instance_type
   ami                         = var.ami
   key_name                    = var.ec2_keypair_name
-  vpc_security_group_ids      = aws_security_group.ec2-sg.id
+  vpc_security_group_ids      = ["${aws_security_group.ec2-sg.id}"]
   iam_instance_profile        = aws_iam_instance_profile.airflow_profile.name
   associate_public_ip_address = true
   volume_tags                 = var.tags
@@ -244,6 +244,6 @@ resource "aws_instance" "airflow_worker" { #TODO need to setup start scripts
   }
 
   user_data= data.template_file.provisisioner.rendered
-  tags = var.tags
+
 }
 
