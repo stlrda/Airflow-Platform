@@ -1,11 +1,19 @@
 #----------------------------------
+#Creates IAM Roles
+#----------------------------------
+# TODO Need to create roles
+resource "aws_iam_role" iam_role {
+  name = "${var.cluster_name}-profile"
+}
+
+#----------------------------------
 #Assigns IAM policies
 #----------------------------------
 
 #EC2 Profile
 resource "aws_iam_instance_profile" "airflow_profile" { #TODO does this serve all ec2 instances, or just the workers?
   name = "${var.cluster_name}-profile"
-  path = "/instance-profile"
+  path = "/instance-profile/"
 }
 
 resource "aws_iam_role_policy_attachment" "s3_policy" {
