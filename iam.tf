@@ -1,9 +1,24 @@
 #----------------------------------
 #Creates IAM Roles
 #----------------------------------
-# TODO Need to create roles
 resource "aws_iam_role" iam_role {
   name = "${var.cluster_name}-profile"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
 }
 
 #----------------------------------
@@ -17,12 +32,12 @@ resource "aws_iam_instance_profile" "airflow_profile" { #TODO does this serve al
 }
 
 resource "aws_iam_role_policy_attachment" "s3_policy" {
-  role       = "${var.cluster_name}-s3-policy"
+  role       = "${var.cluster_name}-profile"
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
 resource "aws_iam_role_policy_attachment" "sqs_policy" {
-  role       = "${var.cluster_name}-sqs-policy"
+  role       = "${var.cluster_name}-profile"
   policy_arn = "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
 }
 
