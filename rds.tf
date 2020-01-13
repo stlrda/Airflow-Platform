@@ -57,7 +57,7 @@ resource "aws_security_group" "db-sg" {
 #----------------------------------
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name       = "${var.cluster_name}-subnet-group"
-  subnet_ids = [aws_subnet.airflow_subnet.id]
+  subnet_ids = [aws_subnet.airflow_subnet_a.id, aws_subnet.airflow_subnet_b.id]
   tags       = var.tags
 }
 
@@ -82,4 +82,5 @@ resource "aws_db_instance" "airflow_database" {
   vpc_security_group_ids  = [aws_security_group.db-sg.id]
   port                    = 5432
   db_subnet_group_name    = aws_db_subnet_group.rds_subnet_group.name
+  allocated_storage       = 20
 }
