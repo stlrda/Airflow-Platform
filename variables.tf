@@ -146,7 +146,7 @@ variable "fernet_key" {
   type = string
 }
 #EC2 Provisioner Variables-----------------------
-data "template_file" "provisisioner" {
+data "template_file" "provisioner" {
   template = file("${path.module}/Startup Scripts/cloud-init.sh")
 
   vars = {

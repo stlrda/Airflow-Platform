@@ -8,7 +8,7 @@ resource "aws_security_group" "db-sg" {
   vpc_id      = aws_vpc.airflow_vpc.id
   tags        = var.tags
 
-  ingress { #TODO Verify Cidr blocks
+  ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"

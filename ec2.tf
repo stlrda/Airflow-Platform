@@ -45,7 +45,7 @@ resource "aws_security_group" "ec2-sg" {
 #----------------------------------
 #Create ec2 instances
 #----------------------------------
-resource "aws_instance" "airflow_webserver" { #TODO need to setup start scripts (see PowerDataHub-terraform-aws-airflow/main.tf, line 121)
+resource "aws_instance" "airflow_webserver" {
   count = 1
 
   instance_type               = var.webserver_instance_type
@@ -56,7 +56,7 @@ resource "aws_instance" "airflow_webserver" { #TODO need to setup start scripts 
   iam_instance_profile        = aws_iam_instance_profile.airflow_profile.name
   associate_public_ip_address = true
   volume_tags                 = var.tags
-  tags                        = var.tags
+  tags                        = merge(var.tags, {"Name" = "airflow_webserver"})
 
   lifecycle { create_before_destroy = true }
 
@@ -110,11 +110,11 @@ resource "aws_instance" "airflow_webserver" { #TODO need to setup start scripts 
 //    }
 //  }
 
-  user_data= data.template_file.provisisioner.rendered
+  user_data= data.template_file.provisioner.rendered
 
 }
 
-resource "aws_instance" "airflow_scheduler" { #TODO need to setup start scripts
+resource "aws_instance" "airflow_scheduler" {
   count                       = 1
   instance_type               = var.scheduler_instance_type
   ami                         = var.ami
@@ -124,7 +124,7 @@ resource "aws_instance" "airflow_scheduler" { #TODO need to setup start scripts
   iam_instance_profile        = aws_iam_instance_profile.airflow_profile.name
   associate_public_ip_address = true
   volume_tags                 = var.tags
-  tags                        = var.tags
+  tags                        = merge(var.tags, {"Name" = "airflow_scheduler"})
 
   lifecycle { create_before_destroy = true }
 
@@ -178,11 +178,11 @@ resource "aws_instance" "airflow_scheduler" { #TODO need to setup start scripts
 //    }
 //  }
 
-  user_data= data.template_file.provisisioner.rendered
+  user_data= data.template_file.provisioner.rendered
 
 }
 
-resource "aws_instance" "airflow_worker" { #TODO need to setup start scripts
+resource "aws_instance" "airflow_worker" {
   count                       = var.number_of_workers
   instance_type               = var.worker_instance_type
   ami                         = var.ami
@@ -192,7 +192,7 @@ resource "aws_instance" "airflow_worker" { #TODO need to setup start scripts
   iam_instance_profile        = aws_iam_instance_profile.airflow_profile.name
   associate_public_ip_address = true
   volume_tags                 = var.tags
-  tags                        = var.tags
+  tags                        = merge(var.tags, {"Name" = "airflow_worker"})
 
   lifecycle { create_before_destroy = true }
 
@@ -246,7 +246,7 @@ resource "aws_instance" "airflow_worker" { #TODO need to setup start scripts
 //    }
 //  }
 
-  user_data= data.template_file.provisisioner.rendered
+  user_data= data.template_file.provisioner.rendered
 
 }
 

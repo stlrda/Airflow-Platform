@@ -26,7 +26,7 @@ EOF
 #----------------------------------
 
 #EC2 Profile
-resource "aws_iam_instance_profile" "airflow_profile" { #TODO does this serve all ec2 instances, or just the workers?
+resource "aws_iam_instance_profile" "airflow_profile" {
   name = "${var.cluster_name}-profile"
   path = "/instance-profile/"
 }

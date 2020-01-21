@@ -1,5 +1,5 @@
 #----------------------------------
-#Creates an SQS queue # TODO Is this used to communicate with workers?
+#Creates an SQS queue
 #----------------------------------
 resource "aws_sqs_queue" "airflow_queue" {
   name             = "${var.cluster_name}-queue"
