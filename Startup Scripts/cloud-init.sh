@@ -73,20 +73,20 @@ function install_python_and_python_packages() {
 function airflow_config() {
   echo AIRFLOW__CORE__DEFAULT_TIMEZONE=America/Chicago | sudo tee -a /tmp/custom_env
   echo psycopg2-binary | sudo tee -a /tmp/requirements.txt
-  echo AWS_DEFAULT_REGION=${var.aws_region} | sudo tee -a /tmp/airflow_environment
+  echo AWS_DEFAULT_REGION=${AWS_REGION} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW_HOME=/usr/local/airflow | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__EXECUTOR=CeleryExecutor | sudo tee -a /tmp/airflow_environment
-  echo AIRFLOW__CORE__FERNET_KEY=${var.fernet_key} | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CORE__FERNET_KEY=${FERNET_KEY} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__LOAD_EXAMPLES=true | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__LOAD_DEFAULTS=false | sudo tee -a /tmp/airflow_environment
-  echo AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${var.db_username}:${var.db_password}@${aws_db_instance.airflow_database.endpoint}/${var.db_dbname} | sudo tee -a /tmp/airflow_environment
-  echo AIRFLOW__CORE__REMOTE_BASE_LOG_FOLDER=s3://${aws_s3_bucket.airflow_logs.id} | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${DB_USERNAME}:${DB_PASSWORD}@${DB_ENDPOINT}/${DB_DBNAME} | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CORE__REMOTE_BASE_LOG_FOLDER=s3://${S3_BUCKET} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__REMOTE_LOGGING=True | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__WEBSERVER__WEB_SERVER_PORT=8080 | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__WEBSERVER__RBAC=True | sudo tee -a /tmp/airflow_environment
-  echo AIRFLOW__CELERY__DEFAULT_QUEUE=${var.cluster_name}-queue | sudo tee -a /tmp/airflow_environment
-  echo AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://${var.db_dbname}:${var.db_password}@${aws_db_instance.airflow_database.endpoint}/${var.db_dbname} | sudo tee -a /tmp/airflow_environment
-  echo AIRFLOW__CELERY__BROKER_TRANSPORT_OPTIONS__REGION=${var.aws_region} | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CELERY__DEFAULT_QUEUE=${QUEUE_NAME} | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://${DB_DBNAME}:${DB_PASSWORD}@${DB_ENDPOINT}/${DB_DBNAME} | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CELERY__BROKER_TRANSPORT_OPTIONS__REGION=${AWS_REGION} | sudo tee -a /tmp/airflow_environment
   echo [Unit] | sudo tee -a /tmp/airflow.service
   echo Description=Airflow daemon | sudo tee -a /tmp/airflow.service
   echo After=network.target | sudo tee -a /tmp/airflow.service
@@ -101,7 +101,7 @@ function airflow_config() {
   echo PrivateTmp=true | sudo tee -a /tmp/airflow.service
   echo [Install] | sudo tee -a /tmp/airflow.service
   echo WantedBy=multi-user.target | sudo tee -a /tmp/airflow.service
-  echo AIRFLOW_ROLE=WEBSERVER | sudo tee -a /etc/environment #TODO This should reflect role of each server.
+  echo AIRFLOW_ROLE=${AIRFLOW_ROLE} | sudo tee -a /etc/environment
 }
 
 function setup_airflow() {
