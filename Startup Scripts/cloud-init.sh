@@ -9,6 +9,8 @@ function install_dependencies() {
     sudo DEBIAN_FRONTEND=noninteractive apt-get update -yqq \
 	&& sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -yqq \
     && sudo apt-get install -yqq --no-install-recommends \
+	&& sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -yqq \
+    && sudo apt-get install -yqq --no-install-recommends \
 		apt-utils \
 		bzip2 \
 		curl \
@@ -30,14 +32,14 @@ function install_dependencies() {
 		python3 \
 		python3-dev \
 		python3-pip \
-        build-essential \
-        freetds-bin \
-        locales \
-        netcat \
-        rsync \
-    && sudo sed -i 's/^# en_US.UTF-8 UTF-8$/en_US.UTF-8 UTF-8/g' /etc/locale.gen \
-    && locale-gen \
-    && sudo update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+    build-essential \
+    freetds-bin \
+    locales \
+    netcat \
+    rsync \
+  && sudo sed -i 's/^# en_US.UTF-8 UTF-8$/en_US.UTF-8 UTF-8/g' /etc/locale.gen \
+  && locale-gen \
+  && sudo update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
 function install_python_and_python_packages() {
 	pip3 install -qU setuptools wheel --ignore-installed
@@ -52,7 +54,7 @@ function install_python_and_python_packages() {
 	fi
 
     pip3 install -U \
-		apache-airflow[celery,postgres,s3,crypto,jdbc,google_auth,redis,slack,ssh,sentry]==1.10.7 \
+		apache-airflow[celery,postgres,s3,crypto,jdbc,google_auth,redis,slack,ssh,sentry]==1.10.9 \
 		boto3 \
 		celery[sqs]==4.3.0 \
 		cython \
@@ -63,7 +65,8 @@ function install_python_and_python_packages() {
 		pyopenssl \
 		pytz \
 		redis \
-		wheel
+		wheel \
+		werkzeug==0.16.0
 
 	sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 
@@ -77,13 +80,14 @@ function airflow_config() {
   echo AIRFLOW_HOME=/usr/local/airflow | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__EXECUTOR=CeleryExecutor | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__FERNET_KEY=${FERNET_KEY} | sudo tee -a /tmp/airflow_environment
-  echo AIRFLOW__CORE__LOAD_EXAMPLES=true | sudo tee -a /tmp/airflow_environment
-  echo AIRFLOW__CORE__LOAD_DEFAULTS=true | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CORE__LOAD_EXAMPLES=false | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CORE__LOAD_DEFAULTS=false | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${DB_USERNAME}:${DB_PASSWORD}@${DB_ENDPOINT}/${DB_DBNAME} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__REMOTE_BASE_LOG_FOLDER=s3://${S3_BUCKET} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__REMOTE_LOGGING=true | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__WEBSERVER__WEB_SERVER_PORT=8080 | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__WEBSERVER__RBAC=true | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CELERY___BROKER_URL=sqs:// | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CELERY__DEFAULT_QUEUE=${QUEUE_NAME} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://${DB_DBNAME}:${DB_PASSWORD}@${DB_ENDPOINT}/${DB_DBNAME} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CELERY__BROKER_TRANSPORT_OPTIONS__REGION=${AWS_REGION} | sudo tee -a /tmp/airflow_environment
