@@ -146,6 +146,7 @@ variable "fernet_key" {
   type = string
 }
 
+#GIT VARIABLES------------------------------------
 variable "dag_git_repository_url" {
   description = "Publicly available github repository url of dag repository."
   type = string
