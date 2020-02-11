@@ -32,12 +32,12 @@ resource "aws_iam_instance_profile" "airflow_profile" {
 }
 
 resource "aws_iam_role_policy_attachment" "s3_policy" {
-  role       = "${var.cluster_name}-profile"
+  role       = aws_iam_instance_profile.airflow_profile.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
 resource "aws_iam_role_policy_attachment" "sqs_policy" {
-  role       = "${var.cluster_name}-profile"
+  role       = aws_iam_instance_profile.airflow_profile.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
 }
 
