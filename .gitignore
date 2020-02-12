@@ -58,4 +58,3 @@ override.tf.json
 #############
 .idea
 python/__pycache__
-*/airflow.cfg
