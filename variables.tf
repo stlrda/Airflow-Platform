@@ -12,12 +12,25 @@ variable "tags" {
   }
 }
 
+#AIRFLOW CONFIG VARIABLES-----------------------
+variable "time_zone" {
+  description = "Default timezone in case supplied date times are naive can be utc (default), system, or any IANA timezone string (e.g. Europe/Amsterdam)"
+  type = string
+  default = "utc"
+}
+
+variable "load_examples" {
+  description = "Loads example dags and connections into Airflow. Useful for starting/testing, not recommended"
+  type = string
+  default = "True"
+}
 #ADMINISTRATION AND CREDENTIAL VARIABLES------------------
 variable "aws_region" {
   description = "AWS Region"
   type        = string
   default     = "us-east-1"
 }
+
 
 variable "aws_profile" {
   description = "Profile from AWS credential file to be used"
@@ -221,5 +234,19 @@ data "template_file" "worker_provisioner" {
     WEBSERVER_PORT = 8080
     QUEUE_NAME = "${var.cluster_name}-queue"
     AIRFLOW_ROLE = "WORKER"
+  }
+}
+
+#TODO
+data "template_file" "webserver_config_provisioner" {
+  tempate = file("${path.module}/Startup Scripts/airflow.cfg")
+
+  vars = {
+    TIME_ZONE = var.time_zone
+    DB_USERNAME = var.db_username
+    DB_PASSWORD = var.db_password
+    DB_ENDPOINT = aws_db_instance.airflow_database.endpoint
+    DB_DBNAME = var.db_dbname
+    LOAD_EXAMPLES = var.load_examples
   }
 }
