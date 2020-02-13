@@ -249,5 +249,8 @@ data "template_file" "webserver_config_provisioner" {
     DB_DBNAME = var.db_dbname
     LOAD_EXAMPLES = var.load_examples
     S3_BUCKET = aws_s3_bucket.airflow_logs.id
+    FERNET_KEY = var.fernet_key
+    QUEUE_NAME = "${var.cluster_name}-queue"
+    AWS_REGION = var.aws_region
   }
 }
