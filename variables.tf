@@ -248,5 +248,6 @@ data "template_file" "webserver_config_provisioner" {
     DB_ENDPOINT = aws_db_instance.airflow_database.endpoint
     DB_DBNAME = var.db_dbname
     LOAD_EXAMPLES = var.load_examples
+    S3_BUCKET = aws_s3_bucket.airflow_logs.id
   }
 }
