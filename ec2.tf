@@ -79,13 +79,21 @@ resource "aws_instance" "airflow_webserver" {
     volume_type = var.root_volume_type
     volume_size = var.root_volume_size
   }
-  provisioner "file" {
-    content = data.template_file.config_provisioner.rendered
-    destination = "/usr/local/airflow/airflow.cfg"
-  }
 
   user_data= data.template_file.webserver_provisioner.rendered
 
+    provisioner "file" {
+    content = data.template_file.config_provisioner.rendered
+    destination = "/usr/local/airflow/airflow.cfg"
+
+    connection {
+      host = self.public_ip
+      agent = false
+      type = "ssh"
+      user = "ubuntu"
+      private_key = file(var.private_key_path)
+    }
+  }
 }
 
 resource "aws_instance" "airflow_scheduler" {
@@ -107,12 +115,20 @@ resource "aws_instance" "airflow_scheduler" {
     volume_size = var.root_volume_size
   }
 
-  provisioner "file" {
-    content = data.template_file.config_provisioner.rendered
-    destination = "/usr/local/airflow/airflow.cfg"
-  }
   user_data= data.template_file.scheduler_provisioner.rendered
 
+    provisioner "file" {
+    content = data.template_file.config_provisioner.rendered
+    destination = "/usr/local/airflow/airflow.cfg"
+
+    connection {
+      host = self.public_ip
+      agent = false
+      type = "ssh"
+      user = "ubuntu"
+      private_key = file(var.private_key_path)
+    }
+  }
 }
 
 resource "aws_instance" "airflow_worker" {
@@ -134,12 +150,18 @@ resource "aws_instance" "airflow_worker" {
     volume_size = var.root_volume_size
   }
 
+  user_data= data.template_file.worker_provisioner.rendered
   provisioner "file" {
     content = data.template_file.config_provisioner.rendered
     destination = "/usr/local/airflow/airflow.cfg"
+
+    connection {
+      host = self.public_ip
+      agent = false
+      type = "ssh"
+      user = "ubuntu"
+      private_key = file(var.private_key_path)
+    }
   }
-
-  user_data= data.template_file.worker_provisioner.rendered
-
 }
 
