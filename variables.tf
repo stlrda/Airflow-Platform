@@ -158,6 +158,23 @@ variable "fernet_key" {
   description = "Key for encrypting data in the database - see Airflow docs."
   type = string
 }
+
+#GIT VARIABLES--------------------------------------
+variable "dag_git_repository_url" {
+  description = "Publicly available github repository url of dag repository."
+  type = string
+}
+
+variable "dag_git_repository_directory" {
+  description = "Sub directory of folder in repository containing DAGs."
+  type = string
+}
+
+variable "dag_git_repository_branch" {
+  description = "Branch of repository to pull every 5 minutes."
+  type = string
+}
+
 #EC2 Provisioner Variables-----------------------
 data "template_file" "webserver_provisioner" {
   template = file("${path.module}/Startup Scripts/cloud-init.sh")
@@ -182,6 +199,9 @@ data "template_file" "webserver_provisioner" {
     WEBSERVER_PORT = 8080
     QUEUE_NAME = "${var.cluster_name}-queue"
     AIRFLOW_ROLE = "WEBSERVER"
+    DAG_GIT_REPOSITORY_URL=var.dag_git_repository_url
+    DAG_GIT_REPOSITORY_DIRECTORY=var.dag_git_repository_directory
+    DAG_GIT_REPOSITORY_BRANCH=var.dag_git_repository_branch
   }
 }
 
@@ -208,6 +228,9 @@ data "template_file" "scheduler_provisioner" {
     WEBSERVER_PORT = 8080
     QUEUE_NAME = "${var.cluster_name}-queue"
     AIRFLOW_ROLE = "SCHEDULER"
+    DAG_GIT_REPOSITORY_URL=var.dag_git_repository_url
+    DAG_GIT_REPOSITORY_DIRECTORY=var.dag_git_repository_directory
+    DAG_GIT_REPOSITORY_BRANCH=var.dag_git_repository_branch
   }
 }
 
@@ -234,12 +257,16 @@ data "template_file" "worker_provisioner" {
     WEBSERVER_PORT = 8080
     QUEUE_NAME = "${var.cluster_name}-queue"
     AIRFLOW_ROLE = "WORKER"
+    DAG_GIT_REPOSITORY_URL=var.dag_git_repository_url
+    DAG_GIT_REPOSITORY_DIRECTORY=var.dag_git_repository_directory
+    DAG_GIT_REPOSITORY_BRANCH=var.dag_git_repository_branch
+
   }
 }
 
 #TODO
-data "template_file" "webserver_config_provisioner" {
-  tempate = file("${path.module}/Startup Scripts/airflow.cfg")
+data "template_file" "config_provisioner" {
+  template = file("${path.module}/Startup Scripts/airflow.cfg")
 
   vars = {
     TIME_ZONE = var.time_zone

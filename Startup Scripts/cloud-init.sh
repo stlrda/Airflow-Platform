@@ -74,6 +74,23 @@ function install_python_and_python_packages() {
 }
 
 function airflow_config() {
+  echo AIRFLOW__CORE__DEFAULT_TIMEZONE=America/Chicago | sudo tee -a /tmp/custom_env
+  echo psycopg2-binary | sudo tee -a /tmp/requirements.txt
+  echo AWS_DEFAULT_REGION=${AWS_REGION} | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW_HOME=/usr/local/airflow | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CORE__EXECUTOR=CeleryExecutor | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CORE__FERNET_KEY=${FERNET_KEY} | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CORE__LOAD_EXAMPLES=false | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CORE__LOAD_DEFAULTS=false | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${DB_USERNAME}:${DB_PASSWORD}@${DB_ENDPOINT}/${DB_DBNAME} | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CORE__REMOTE_BASE_LOG_FOLDER=s3://${S3_BUCKET} | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CORE__REMOTE_LOGGING=true | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__WEBSERVER__WEB_SERVER_PORT=8080 | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__WEBSERVER__RBAC=true | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CELERY___BROKER_URL=sqs:// | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CELERY__DEFAULT_QUEUE=${QUEUE_NAME} | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://${DB_DBNAME}:${DB_PASSWORD}@${DB_ENDPOINT}/${DB_DBNAME} | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CELERY__BROKER_TRANSPORT_OPTIONS__REGION=${AWS_REGION} | sudo tee -a /tmp/airflow_environment
   echo [Unit] | sudo tee -a /tmp/airflow.service
   echo Description=Airflow daemon | sudo tee -a /tmp/airflow.service
   echo After=network.target | sudo tee -a /tmp/airflow.service
@@ -89,6 +106,19 @@ function airflow_config() {
   echo [Install] | sudo tee -a /tmp/airflow.service
   echo WantedBy=multi-user.target | sudo tee -a /tmp/airflow.service
   echo AIRFLOW_ROLE=${AIRFLOW_ROLE} | sudo tee -a /etc/environment
+}
+
+function setup_git_dag_source() {
+    #!/usr/bin/env bash
+    cd /usr/local/airflow/
+    rm -rf dags
+    git clone ${DAG_GIT_REPOSITORY_URL} git_dags
+    ln -s /usr/local/airflow/git_dags/${DAG_GIT_REPOSITORY_DIRECTORY} /usr/local/airflow/dags
+    cd /usr/local/airflow/dags
+    git checkout ${DAG_GIT_REPOSITORY_BRANCH}
+
+    line="* */5 * * * cd /usr/local/airflow/dags && git pull"
+    (crontab -l; echo "$line" ) | crontab -
 }
 
 function setup_airflow() {
@@ -151,6 +181,7 @@ install_dependencies
 install_python_and_python_packages
 airflow_config
 setup_airflow
+setup_git_dag_source
 cleanup
 
 END_TIME=$(date +%s)
