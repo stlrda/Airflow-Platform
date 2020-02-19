@@ -108,6 +108,19 @@ function airflow_config() {
   echo AIRFLOW_ROLE=${AIRFLOW_ROLE} | sudo tee -a /etc/environment
 }
 
+function setup_git_dag_source() {
+    #!/usr/bin/env bash
+    cd /usr/local/airflow/
+    rm -rf dags
+    git clone ${DAG_GIT_REPOSITORY_URL} git_dags
+    ln -s /usr/local/airflow/git_dags/${DAG_GIT_REPOSITORY_DIRECTORY} /usr/local/airflow/dags
+    cd /usr/local/airflow/dags
+    git checkout ${DAG_GIT_REPOSITORY_BRANCH}
+
+    line="* */5 * * * cd /usr/local/airflow/dags && git pull"
+    (crontab -l; echo "$line" ) | crontab -
+}
+
 function setup_airflow() {
 	sudo tee -a /usr/bin/terraform-aws-airflow <<EOL
 #!/usr/bin/env bash
@@ -168,6 +181,7 @@ install_dependencies
 install_python_and_python_packages
 airflow_config
 setup_airflow
+setup_git_dag_source
 cleanup
 
 END_TIME=$(date +%s)
