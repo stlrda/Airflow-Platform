@@ -102,7 +102,8 @@ resource "aws_instance" "airflow_webserver" {
 
   provisioner "remote-exec" {
     inline = [
-      "mv -f /tmp/airflow.cfg /usr/local/airflow/airflow.cfg"]
+      "sleep 5m",
+      "mv -f /tmp/airflow.cfg /usr/local/airflow/"]
 
     connection {
       host = self.public_ip
@@ -150,7 +151,8 @@ resource "aws_instance" "airflow_scheduler" {
 
   provisioner "remote-exec" {
     inline = [
-    "mv -f /tmp/airflow.cfg /usr/local/airflow/airflow.cfg"]
+      "sleep 5m",
+      "mv -f /tmp/airflow.cfg /usr/local/airflow/"]
 
     connection {
       host = self.public_ip
@@ -199,7 +201,8 @@ resource "aws_instance" "airflow_worker" {
 
   provisioner "remote-exec" {
     inline = [
-    "mv -f /tmp/airflow.cfg /usr/local/airflow/airflow.cfg"]
+      "sleep 5m",
+      "mv -f /tmp/airflow.cfg /usr/local/airflow/"]
 
     connection {
       host = self.public_ip
