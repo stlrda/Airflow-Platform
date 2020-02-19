@@ -12,12 +12,25 @@ variable "tags" {
   }
 }
 
+#AIRFLOW CONFIG VARIABLES-----------------------
+variable "time_zone" {
+  description = "Default timezone in case supplied date times are naive can be utc (default), system, or any IANA timezone string (e.g. Europe/Amsterdam)"
+  type = string
+  default = "utc"
+}
+
+variable "load_examples" {
+  description = "Loads example dags and connections into Airflow. Useful for starting/testing, not recommended"
+  type = string
+  default = "True"
+}
 #ADMINISTRATION AND CREDENTIAL VARIABLES------------------
 variable "aws_region" {
   description = "AWS Region"
   type        = string
   default     = "us-east-1"
 }
+
 
 variable "aws_profile" {
   description = "Profile from AWS credential file to be used"
@@ -146,6 +159,8 @@ variable "fernet_key" {
   type = string
 }
 
+
+#GIT VARIABLES------------------------------------
 variable "dag_git_repository_url" {
   description = "Publicly available github repository url of dag repository."
   type = string
@@ -188,6 +203,7 @@ data "template_file" "webserver_provisioner" {
     DAG_GIT_REPOSITORY_URL = var.dag_git_repository_url
     DAG_GIT_REPOSITORY_DIRECTORY = var.dag_git_repository_directory
     DAG_GIT_REPOSITORY_BRANCH = var.dag_git_repository_branch
+
   }
 }
 
@@ -243,8 +259,27 @@ data "template_file" "worker_provisioner" {
     WEBSERVER_PORT = 8080
     QUEUE_NAME = "${var.cluster_name}-queue"
     AIRFLOW_ROLE = "WORKER"
-    DAG_GIT_REPOSITORY_URL = var.dag_git_repository_url
-    DAG_GIT_REPOSITORY_DIRECTORY = var.dag_git_repository_directory
-    DAG_GIT_REPOSITORY_BRANCH = var.dag_git_repository_branch
+    DAG_GIT_REPOSITORY_URL=var.dag_git_repository_url
+    DAG_GIT_REPOSITORY_DIRECTORY=var.dag_git_repository_directory
+    DAG_GIT_REPOSITORY_BRANCH=var.dag_git_repository_branch
+
+  }
+}
+
+#TODO
+data "template_file" "config_provisioner" {
+  template = file("${path.module}/Startup Scripts/airflow.cfg")
+
+  vars = {
+    TIME_ZONE = var.time_zone
+    DB_USERNAME = var.db_username
+    DB_PASSWORD = var.db_password
+    DB_ENDPOINT = aws_db_instance.airflow_database.endpoint
+    DB_DBNAME = var.db_dbname
+    LOAD_EXAMPLES = var.load_examples
+    S3_BUCKET = aws_s3_bucket.airflow_logs.id
+    FERNET_KEY = var.fernet_key
+    QUEUE_NAME = "${var.cluster_name}-queue"
+    AWS_REGION = var.aws_region
   }
 }
