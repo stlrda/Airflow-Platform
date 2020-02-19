@@ -159,7 +159,8 @@ variable "fernet_key" {
   type = string
 }
 
-#GIT VARIABLES--------------------------------------
+
+#GIT VARIABLES------------------------------------
 variable "dag_git_repository_url" {
   description = "Publicly available github repository url of dag repository."
   type = string
@@ -199,9 +200,10 @@ data "template_file" "webserver_provisioner" {
     WEBSERVER_PORT = 8080
     QUEUE_NAME = "${var.cluster_name}-queue"
     AIRFLOW_ROLE = "WEBSERVER"
-    DAG_GIT_REPOSITORY_URL=var.dag_git_repository_url
-    DAG_GIT_REPOSITORY_DIRECTORY=var.dag_git_repository_directory
-    DAG_GIT_REPOSITORY_BRANCH=var.dag_git_repository_branch
+    DAG_GIT_REPOSITORY_URL = var.dag_git_repository_url
+    DAG_GIT_REPOSITORY_DIRECTORY = var.dag_git_repository_directory
+    DAG_GIT_REPOSITORY_BRANCH = var.dag_git_repository_branch
+
   }
 }
 
@@ -228,9 +230,9 @@ data "template_file" "scheduler_provisioner" {
     WEBSERVER_PORT = 8080
     QUEUE_NAME = "${var.cluster_name}-queue"
     AIRFLOW_ROLE = "SCHEDULER"
-    DAG_GIT_REPOSITORY_URL=var.dag_git_repository_url
-    DAG_GIT_REPOSITORY_DIRECTORY=var.dag_git_repository_directory
-    DAG_GIT_REPOSITORY_BRANCH=var.dag_git_repository_branch
+    DAG_GIT_REPOSITORY_URL = var.dag_git_repository_url
+    DAG_GIT_REPOSITORY_DIRECTORY = var.dag_git_repository_directory
+    DAG_GIT_REPOSITORY_BRANCH = var.dag_git_repository_branch
   }
 }
 
