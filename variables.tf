@@ -38,6 +38,16 @@ variable "aws_profile" {
   default     = "default"
 }
 
+variable "aws_profile_access_key" {
+  description = "Access key for AWS Profile"
+  type = string
+}
+
+variable "aws_secret_access_key" {
+  description = "Secret Access Key for AWS profile"
+  type = string
+}
+
 variable "ec2_keypair_name" {
   description = "Name of keypair used to access ec2 instances"
   type        = string
@@ -183,8 +193,7 @@ data "template_file" "webserver_provisioner" {
   vars = {
     AWS_REGION = var.aws_region
     FERNET_KEY = var.fernet_key
-    LOAD_EXAMPLE_DAGS = true
-    LOAD_DEFAULT_CONNS = true
+    LOAD_EXAMPLES = var.load_examples
     RBAC = true
     ADMIN_NAME = var.admin_name
     ADMIN_LASTNAME = var.admin_lastname
@@ -203,7 +212,8 @@ data "template_file" "webserver_provisioner" {
     DAG_GIT_REPOSITORY_URL = var.dag_git_repository_url
     DAG_GIT_REPOSITORY_DIRECTORY = var.dag_git_repository_directory
     DAG_GIT_REPOSITORY_BRANCH = var.dag_git_repository_branch
-
+    AWS_ACCESS_KEY = var.aws_profile_access_key
+    AWS_SECRET_KEY = var.aws_secret_access_key
   }
 }
 
@@ -213,8 +223,7 @@ data "template_file" "scheduler_provisioner" {
   vars = {
     AWS_REGION = var.aws_region
     FERNET_KEY = var.fernet_key
-    LOAD_EXAMPLE_DAGS = true
-    LOAD_DEFAULT_CONNS = true
+    LOAD_EXAMPLES = var.load_examples
     RBAC = true
     ADMIN_NAME = var.admin_name
     ADMIN_LASTNAME = var.admin_lastname
@@ -233,6 +242,8 @@ data "template_file" "scheduler_provisioner" {
     DAG_GIT_REPOSITORY_URL = var.dag_git_repository_url
     DAG_GIT_REPOSITORY_DIRECTORY = var.dag_git_repository_directory
     DAG_GIT_REPOSITORY_BRANCH = var.dag_git_repository_branch
+    AWS_ACCESS_KEY = var.aws_profile_access_key
+    AWS_SECRET_KEY = var.aws_secret_access_key
   }
 }
 
@@ -242,8 +253,7 @@ data "template_file" "worker_provisioner" {
   vars = {
     AWS_REGION = var.aws_region
     FERNET_KEY = var.fernet_key
-    LOAD_EXAMPLE_DAGS = true
-    LOAD_DEFAULT_CONNS = true
+    LOAD_EXAMPLES = var.load_examples
     RBAC = true
     ADMIN_NAME = var.admin_name
     ADMIN_LASTNAME = var.admin_lastname
@@ -262,24 +272,25 @@ data "template_file" "worker_provisioner" {
     DAG_GIT_REPOSITORY_URL=var.dag_git_repository_url
     DAG_GIT_REPOSITORY_DIRECTORY=var.dag_git_repository_directory
     DAG_GIT_REPOSITORY_BRANCH=var.dag_git_repository_branch
-
+    AWS_ACCESS_KEY = var.aws_profile_access_key
+    AWS_SECRET_KEY = var.aws_secret_access_key
   }
 }
 
-#TODO
-data "template_file" "config_provisioner" {
-  template = file("${path.module}/Startup Scripts/airflow.cfg")
-
-  vars = {
-    TIME_ZONE = var.time_zone
-    DB_USERNAME = var.db_username
-    DB_PASSWORD = var.db_password
-    DB_ENDPOINT = aws_db_instance.airflow_database.endpoint
-    DB_DBNAME = var.db_dbname
-    LOAD_EXAMPLES = var.load_examples
-    S3_BUCKET = aws_s3_bucket.airflow_logs.id
-    FERNET_KEY = var.fernet_key
-    QUEUE_NAME = "${var.cluster_name}-queue"
-    AWS_REGION = var.aws_region
-  }
-}
+//#TODO
+//data "template_file" "config_provisioner" {
+//  template = file("${path.module}/Startup Scripts/airflow.cfg")
+//
+//  vars = {
+//    TIME_ZONE = var.time_zone
+//    DB_USERNAME = var.db_username
+//    DB_PASSWORD = var.db_password
+//    DB_ENDPOINT = aws_db_instance.airflow_database.endpoint
+//    DB_DBNAME = var.db_dbname
+//    LOAD_EXAMPLES = var.load_examples
+//    S3_BUCKET = aws_s3_bucket.airflow_logs.id
+//    FERNET_KEY = var.fernet_key
+//    QUEUE_NAME = "${var.cluster_name}-queue"
+//    AWS_REGION = var.aws_region
+//  }
+//}

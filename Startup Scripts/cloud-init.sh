@@ -6,11 +6,9 @@ function install_dependencies() {
 	sudo apt-get update
 	sudo rm /boot/grub/menu.lst
 	sudo update-grub-legacy-ec2 -y
-    sudo DEBIAN_FRONTEND=noninteractive apt-get update -yqq \
+  sudo DEBIAN_FRONTEND=noninteractive apt-get update -yqq \
 	&& sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -yqq \
-    && sudo apt-get install -yqq --no-install-recommends \
-	&& sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -yqq \
-    && sudo apt-get install -yqq --no-install-recommends \
+  && sudo apt-get install -yqq --no-install-recommends \
 		apt-utils \
 		bzip2 \
 		curl \
@@ -80,8 +78,8 @@ function airflow_config() {
   echo AIRFLOW_HOME=/usr/local/airflow | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__EXECUTOR=CeleryExecutor | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__FERNET_KEY=${FERNET_KEY} | sudo tee -a /tmp/airflow_environment
-  echo AIRFLOW__CORE__LOAD_EXAMPLES=false | sudo tee -a /tmp/airflow_environment
-  echo AIRFLOW__CORE__LOAD_DEFAULTS=false | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CORE__LOAD_EXAMPLES=${LOAD_EXAMPLES} | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CORE__LOAD_DEFAULTS=${LOAD_EXAMPLES}| sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${DB_USERNAME}:${DB_PASSWORD}@${DB_ENDPOINT}/${DB_DBNAME} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__REMOTE_BASE_LOG_FOLDER=s3://${S3_BUCKET} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__REMOTE_LOGGING=true | sudo tee -a /tmp/airflow_environment
