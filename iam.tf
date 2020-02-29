@@ -35,27 +35,3 @@ resource "aws_iam_role_policy_attachment" "s3_policy" {
   role       = aws_iam_instance_profile.airflow_profile.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
-
-resource "aws_iam_role_policy_attachment" "sqs_policy" {
-  role       = aws_iam_instance_profile.airflow_profile.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
-}
-
-resource "aws_sqs_queue_policy" "sqs_permission" {
-  queue_url = aws_sqs_queue.airflow_queue.id
-  policy    = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Id": "sqspolicy",
-  "Statement": [
-    {
-      "Sid": "First",
-      "Effect": "Allow",
-      "Principal": "*",
-      "Action": "SQS:*",
-      "Resource": "${aws_sqs_queue.airflow_queue.arn}"
-    }
-  ]
-}
-POLICY
-}

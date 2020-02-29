@@ -21,7 +21,7 @@ fernet_key = ""
 time_zone = ""
 load_examples = ""
 
-#EC2 VARIABLES (APPLY TO ALL EC2 INSTANCES UNLESSS OTHERWISE SPECIFIED)--------------------------
+#EC2 VARIABLES (APPLY TO ALL EC2 INSTANCES UNLESS OTHERWISE SPECIFIED)--------------------------
 webserver_instance_type = "t3.micro"
 scheduler_instance_type = "t3.micro"
 worker_instance_type = "t3.small"

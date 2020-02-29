@@ -38,16 +38,6 @@ variable "aws_profile" {
   default     = "default"
 }
 
-variable "aws_profile_access_key" {
-  description = "Access key for AWS Profile"
-  type = string
-}
-
-variable "aws_secret_access_key" {
-  description = "Secret Access Key for AWS profile"
-  type = string
-}
-
 variable "ec2_keypair_name" {
   description = "Name of keypair used to access ec2 instances"
   type        = string
@@ -169,7 +159,6 @@ variable "fernet_key" {
   type = string
 }
 
-
 #GIT VARIABLES------------------------------------
 variable "dag_git_repository_url" {
   description = "Publicly available github repository url of dag repository."
@@ -212,8 +201,7 @@ data "template_file" "webserver_provisioner" {
     DAG_GIT_REPOSITORY_URL = var.dag_git_repository_url
     DAG_GIT_REPOSITORY_DIRECTORY = var.dag_git_repository_directory
     DAG_GIT_REPOSITORY_BRANCH = var.dag_git_repository_branch
-    AWS_ACCESS_KEY = var.aws_profile_access_key
-    AWS_SECRET_KEY = var.aws_secret_access_key
+    REDIS_CLUSTER_URL=aws_elasticache_cluster.airflow_queue.cache_nodes.0.address
   }
 }
 
@@ -242,8 +230,7 @@ data "template_file" "scheduler_provisioner" {
     DAG_GIT_REPOSITORY_URL = var.dag_git_repository_url
     DAG_GIT_REPOSITORY_DIRECTORY = var.dag_git_repository_directory
     DAG_GIT_REPOSITORY_BRANCH = var.dag_git_repository_branch
-    AWS_ACCESS_KEY = var.aws_profile_access_key
-    AWS_SECRET_KEY = var.aws_secret_access_key
+    REDIS_CLUSTER_URL=aws_elasticache_cluster.airflow_queue.cache_nodes.0.address
   }
 }
 
@@ -272,8 +259,7 @@ data "template_file" "worker_provisioner" {
     DAG_GIT_REPOSITORY_URL=var.dag_git_repository_url
     DAG_GIT_REPOSITORY_DIRECTORY=var.dag_git_repository_directory
     DAG_GIT_REPOSITORY_BRANCH=var.dag_git_repository_branch
-    AWS_ACCESS_KEY = var.aws_profile_access_key
-    AWS_SECRET_KEY = var.aws_secret_access_key
+    REDIS_CLUSTER_URL=aws_elasticache_cluster.airflow_queue.cache_nodes.0.address
   }
 }
 
