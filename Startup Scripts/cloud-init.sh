@@ -35,6 +35,7 @@ function install_dependencies() {
     locales \
     netcat \
     rsync \
+    redis \
   && sudo sed -i 's/^# en_US.UTF-8 UTF-8$/en_US.UTF-8 UTF-8/g' /etc/locale.gen \
   && locale-gen \
   && sudo update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
@@ -54,7 +55,7 @@ function install_python_and_python_packages() {
     pip3 install -U \
 		apache-airflow[celery,postgres,s3,crypto,jdbc,google_auth,redis,slack,ssh,sentry]==1.10.9 \
 		boto3 \
-		celery[sqs]==4.3.0 \
+		celery[redis]==4.3.0 \
 		cython \
 		ndg-httpsclient \
 		psycopg2-binary \
@@ -85,7 +86,8 @@ function airflow_config() {
   echo AIRFLOW__CORE__REMOTE_LOGGING=true | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__WEBSERVER__WEB_SERVER_PORT=8080 | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__WEBSERVER__RBAC=true | sudo tee -a /tmp/airflow_environment
-  echo AIRFLOW__CELERY___BROKER_URL=${REDIS_CLUSTER_URL} | sudo tee -a /tmp/airflow_environment
+ççsdjflkasjdfgl;akshjfbv
+
   echo AIRFLOW__CELERY__DEFAULT_QUEUE=${QUEUE_NAME} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://${DB_DBNAME}:${DB_PASSWORD}@${DB_ENDPOINT}/${DB_DBNAME} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CELERY__BROKER_TRANSPORT_OPTIONS__REGION=${AWS_REGION} | sudo tee -a /tmp/airflow_environment

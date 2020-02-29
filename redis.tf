@@ -33,6 +33,10 @@ resource "aws_security_group_rule" "airflow_elasticache_sg_rule" {
   type = "ingress"
   source_security_group_id = aws_security_group.ec2-sg.id
 }
+resource "aws_elasticache_subnet_group" "redis_subnet_group" {
+  name = "${var.cluster_name}-queue-subnet-group"
+  subnet_ids = [aws_subnet.airflow_subnet_a.id, aws_subnet.airflow_subnet_b.id]
+}
 
 resource "aws_elasticache_cluster" "airflow_queue" {
   cluster_id             = "${var.cluster_name}-queue"
@@ -40,9 +44,9 @@ resource "aws_elasticache_cluster" "airflow_queue" {
   node_type = "cache.t3.small"
   num_cache_nodes = 1
   parameter_group_name = aws_elasticache_parameter_group.airflow_redis_pg.name
-  subnet_group_name = aws_subnet.airflow_subnet_a.id
+  subnet_group_name = aws_elasticache_subnet_group.redis_subnet_group.name
   security_group_ids = [aws_security_group.airflow_elasticache_sg.id]
-  availability_zone =  aws_subnet.airflow_subnet_a.id
+  availability_zone =  aws_subnet.airflow_subnet_a.availability_zone
   tags             = var.tags
 }
 
