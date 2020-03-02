@@ -2,7 +2,7 @@
 #Creates IAM Roles
 #----------------------------------
 resource "aws_iam_role" iam_role {
-  name = "${var.cluster_name}-profile"
+  name = "${var.cluster_name}-role"
 
   assume_role_policy = <<EOF
 {
