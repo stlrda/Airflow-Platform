@@ -28,7 +28,7 @@ EOF
 #EC2 Profile
 resource "aws_iam_instance_profile" "airflow_profile" {
   name = "${var.cluster_name}-profile"
-  path = "/instance-profile/"
+  role = aws_iam_role.iam_role.name
 }
 
 resource "aws_iam_role_policy_attachment" "s3_policy" {
