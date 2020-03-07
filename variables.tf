@@ -159,7 +159,6 @@ variable "fernet_key" {
   type = string
 }
 
-
 #GIT VARIABLES------------------------------------
 variable "dag_git_repository_url" {
   description = "Publicly available github repository url of dag repository."
@@ -183,8 +182,7 @@ data "template_file" "webserver_provisioner" {
   vars = {
     AWS_REGION = var.aws_region
     FERNET_KEY = var.fernet_key
-    LOAD_EXAMPLE_DAGS = true
-    LOAD_DEFAULT_CONNS = true
+    LOAD_EXAMPLES = var.load_examples
     RBAC = true
     ADMIN_NAME = var.admin_name
     ADMIN_LASTNAME = var.admin_lastname
@@ -203,7 +201,7 @@ data "template_file" "webserver_provisioner" {
     DAG_GIT_REPOSITORY_URL = var.dag_git_repository_url
     DAG_GIT_REPOSITORY_DIRECTORY = var.dag_git_repository_directory
     DAG_GIT_REPOSITORY_BRANCH = var.dag_git_repository_branch
-
+    REDIS_CLUSTER_URL=aws_elasticache_cluster.airflow_queue.cache_nodes.0.address
   }
 }
 
@@ -213,8 +211,7 @@ data "template_file" "scheduler_provisioner" {
   vars = {
     AWS_REGION = var.aws_region
     FERNET_KEY = var.fernet_key
-    LOAD_EXAMPLE_DAGS = true
-    LOAD_DEFAULT_CONNS = true
+    LOAD_EXAMPLES = var.load_examples
     RBAC = true
     ADMIN_NAME = var.admin_name
     ADMIN_LASTNAME = var.admin_lastname
@@ -233,6 +230,7 @@ data "template_file" "scheduler_provisioner" {
     DAG_GIT_REPOSITORY_URL = var.dag_git_repository_url
     DAG_GIT_REPOSITORY_DIRECTORY = var.dag_git_repository_directory
     DAG_GIT_REPOSITORY_BRANCH = var.dag_git_repository_branch
+    REDIS_CLUSTER_URL="${aws_elasticache_cluster.airflow_queue.cache_nodes.0.address}:6379/0"
   }
 }
 
@@ -242,8 +240,7 @@ data "template_file" "worker_provisioner" {
   vars = {
     AWS_REGION = var.aws_region
     FERNET_KEY = var.fernet_key
-    LOAD_EXAMPLE_DAGS = true
-    LOAD_DEFAULT_CONNS = true
+    LOAD_EXAMPLES = var.load_examples
     RBAC = true
     ADMIN_NAME = var.admin_name
     ADMIN_LASTNAME = var.admin_lastname
@@ -262,24 +259,24 @@ data "template_file" "worker_provisioner" {
     DAG_GIT_REPOSITORY_URL=var.dag_git_repository_url
     DAG_GIT_REPOSITORY_DIRECTORY=var.dag_git_repository_directory
     DAG_GIT_REPOSITORY_BRANCH=var.dag_git_repository_branch
-
+    REDIS_CLUSTER_URL=aws_elasticache_cluster.airflow_queue.cache_nodes.0.address
   }
 }
 
-#TODO
-data "template_file" "config_provisioner" {
-  template = file("${path.module}/Startup Scripts/airflow.cfg")
-
-  vars = {
-    TIME_ZONE = var.time_zone
-    DB_USERNAME = var.db_username
-    DB_PASSWORD = var.db_password
-    DB_ENDPOINT = aws_db_instance.airflow_database.endpoint
-    DB_DBNAME = var.db_dbname
-    LOAD_EXAMPLES = var.load_examples
-    S3_BUCKET = aws_s3_bucket.airflow_logs.id
-    FERNET_KEY = var.fernet_key
-    QUEUE_NAME = "${var.cluster_name}-queue"
-    AWS_REGION = var.aws_region
-  }
-}
+//#TODO
+//data "template_file" "config_provisioner" {
+//  template = file("${path.module}/Startup Scripts/airflow.cfg")
+//
+//  vars = {
+//    TIME_ZONE = var.time_zone
+//    DB_USERNAME = var.db_username
+//    DB_PASSWORD = var.db_password
+//    DB_ENDPOINT = aws_db_instance.airflow_database.endpoint
+//    DB_DBNAME = var.db_dbname
+//    LOAD_EXAMPLES = var.load_examples
+//    S3_BUCKET = aws_s3_bucket.airflow_logs.id
+//    FERNET_KEY = var.fernet_key
+//    QUEUE_NAME = "${var.cluster_name}-queue"
+//    AWS_REGION = var.aws_region
+//  }
+//}
