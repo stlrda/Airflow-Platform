@@ -1,5 +1,5 @@
-# terraform_aws_airflow_cluster
-A module for creating an airflow cluster in AWS
+# REDB-Platform
+A module for creating an Apache Airflow cluster in AWS. This Airflow cluster will be used to power the data pipelines for the Saint Louis Regional Entity Database.
 
 #Backend Setup
 Terraform state (the cannonical terraform.tfstate file) is stored remotely in S3 so multiple developers can apply using different computers.

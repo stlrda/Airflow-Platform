@@ -1,15 +1,25 @@
 #METADATA VARIABLES----------------------
-cluster_name = ''
+cluster_name = ""
 tags = {
-    "Project" = ""
-    "Owner" = ""
   }
 
+
 #ADMINISTRATION AND CREDENTIAL VARIABLES------------------
-aws_region = "us-east-1"
+aws_region = ""
 aws_profile = ""
+aws_profile_access_key = ""
+aws_secret_access_key = ""
 ec2_keypair_name = ""
 public_key_path = ""
+private_key_path = ""
+admin_email = ""
+admin_username = ""
+admin_password = ""
+fernet_key = ""
+
+#AIRFLOW CONFIG VARIABLES------------------------------
+time_zone = ""
+load_examples = ""
 
 #EC2 VARIABLES (APPLY TO ALL EC2 INSTANCES UNLESS OTHERWISE SPECIFIED)--------------------------
 webserver_instance_type = "t3.micro"
@@ -19,7 +29,7 @@ number_of_workers  = 1
 
 #DB VARIABLES------------------------------------
 db_instance_type = "db.t2.micro"
-db_dbname = ""
+db_dbname = "airflow"
 db_username = ""
 db_password = ""
 
