@@ -201,7 +201,7 @@ data "template_file" "webserver_provisioner" {
     DAG_GIT_REPOSITORY_URL = var.dag_git_repository_url
     DAG_GIT_REPOSITORY_DIRECTORY = var.dag_git_repository_directory
     DAG_GIT_REPOSITORY_BRANCH = var.dag_git_repository_branch
-    REDIS_CLUSTER_URL=aws_elasticache_cluster.airflow_queue.cache_nodes.0.address
+    REDIS_CLUSTER_URL="redis://${aws_elasticache_cluster.airflow_queue.cache_nodes.0.address}:6379/1"
   }
 }
 
@@ -230,7 +230,7 @@ data "template_file" "scheduler_provisioner" {
     DAG_GIT_REPOSITORY_URL = var.dag_git_repository_url
     DAG_GIT_REPOSITORY_DIRECTORY = var.dag_git_repository_directory
     DAG_GIT_REPOSITORY_BRANCH = var.dag_git_repository_branch
-    REDIS_CLUSTER_URL="${aws_elasticache_cluster.airflow_queue.cache_nodes.0.address}:6379/0"
+    REDIS_CLUSTER_URL="redis://${aws_elasticache_cluster.airflow_queue.cache_nodes.0.address}:6379/1"
   }
 }
 
@@ -259,7 +259,7 @@ data "template_file" "worker_provisioner" {
     DAG_GIT_REPOSITORY_URL=var.dag_git_repository_url
     DAG_GIT_REPOSITORY_DIRECTORY=var.dag_git_repository_directory
     DAG_GIT_REPOSITORY_BRANCH=var.dag_git_repository_branch
-    REDIS_CLUSTER_URL=aws_elasticache_cluster.airflow_queue.cache_nodes.0.address
+    REDIS_CLUSTER_URL="redis://${aws_elasticache_cluster.airflow_queue.cache_nodes.0.address}:6379/1"
   }
 }
 
