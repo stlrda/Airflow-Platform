@@ -201,7 +201,7 @@ data "template_file" "webserver_provisioner" {
     DAG_GIT_REPOSITORY_URL = var.dag_git_repository_url
     DAG_GIT_REPOSITORY_DIRECTORY = var.dag_git_repository_directory
     DAG_GIT_REPOSITORY_BRANCH = var.dag_git_repository_branch
-    REDIS_CLUSTER_URL=aws_elasticache_cluster.airflow_queue.cache_nodes.0.address
+    REDIS_CLUSTER_URL="redis://${aws_elasticache_cluster.airflow_queue.cache_nodes.0.address}:6379/1"
   }
 }
 
@@ -230,7 +230,7 @@ data "template_file" "scheduler_provisioner" {
     DAG_GIT_REPOSITORY_URL = var.dag_git_repository_url
     DAG_GIT_REPOSITORY_DIRECTORY = var.dag_git_repository_directory
     DAG_GIT_REPOSITORY_BRANCH = var.dag_git_repository_branch
-    REDIS_CLUSTER_URL="${aws_elasticache_cluster.airflow_queue.cache_nodes.0.address}:6379/0"
+    REDIS_CLUSTER_URL="redis://${aws_elasticache_cluster.airflow_queue.cache_nodes.0.address}:6379/1"
   }
 }
 
@@ -259,24 +259,6 @@ data "template_file" "worker_provisioner" {
     DAG_GIT_REPOSITORY_URL=var.dag_git_repository_url
     DAG_GIT_REPOSITORY_DIRECTORY=var.dag_git_repository_directory
     DAG_GIT_REPOSITORY_BRANCH=var.dag_git_repository_branch
-    REDIS_CLUSTER_URL=aws_elasticache_cluster.airflow_queue.cache_nodes.0.address
+    REDIS_CLUSTER_URL="redis://${aws_elasticache_cluster.airflow_queue.cache_nodes.0.address}:6379/1"
   }
 }
-
-//#TODO
-//data "template_file" "config_provisioner" {
-//  template = file("${path.module}/Startup Scripts/airflow.cfg")
-//
-//  vars = {
-//    TIME_ZONE = var.time_zone
-//    DB_USERNAME = var.db_username
-//    DB_PASSWORD = var.db_password
-//    DB_ENDPOINT = aws_db_instance.airflow_database.endpoint
-//    DB_DBNAME = var.db_dbname
-//    LOAD_EXAMPLES = var.load_examples
-//    S3_BUCKET = aws_s3_bucket.airflow_logs.id
-//    FERNET_KEY = var.fernet_key
-//    QUEUE_NAME = "${var.cluster_name}-queue"
-//    AWS_REGION = var.aws_region
-//  }
-//}
