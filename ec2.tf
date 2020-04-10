@@ -61,8 +61,6 @@ resource "aws_security_group" "ec2-sg" {
 #Create ec2 instances
 #----------------------------------
 resource "aws_instance" "airflow_webserver" {
-  count = 1
-
   instance_type = var.webserver_instance_type
   ami = var.ami
   key_name = var.ec2_keypair_name
