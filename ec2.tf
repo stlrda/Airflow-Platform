@@ -82,7 +82,7 @@ resource "aws_instance" "airflow_webserver" {
     volume_type = var.root_volume_type
     volume_size = var.root_volume_size
   }
-
+  depends_on = [aws_db_instance.airflow_database]
   user_data = data.template_file.webserver_provisioner.rendered
 
 //  provisioner "file" {
@@ -131,7 +131,7 @@ resource "aws_instance" "airflow_scheduler" {
     volume_type = var.root_volume_type
     volume_size = var.root_volume_size
   }
-
+  depends_on = [aws_db_instance.airflow_database]
   user_data= data.template_file.scheduler_provisioner.rendered
 
 //  provisioner "file" {
@@ -181,7 +181,7 @@ resource "aws_instance" "airflow_worker" {
     volume_type = var.root_volume_type
     volume_size = var.root_volume_size
   }
-
+  depends_on = [aws_db_instance.airflow_database]
   user_data= data.template_file.worker_provisioner.rendered
 
 //  provisioner "file" {
