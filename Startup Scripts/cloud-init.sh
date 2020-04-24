@@ -36,6 +36,7 @@ function install_dependencies() {
     netcat \
     rsync \
     redis \
+    mdbtools \
   && sudo sed -i 's/^# en_US.UTF-8 UTF-8$/en_US.UTF-8 UTF-8/g' /etc/locale.gen \
   && locale-gen \
   && sudo update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
@@ -53,7 +54,7 @@ function install_python_and_python_packages() {
 	fi
 
     pip3 install -U \
-		apache-airflow[celery,postgres,s3,crypto,jdbc,google_auth,redis,slack,ssh,sentry]==1.10.9 \
+		apache-airflow[celery,postgres,s3,crypto,jdbc,google_auth,redis,slack,ssh,sentry]==1.10.10 \
 		boto3 \
 		celery[redis]==4.3.0 \
 		cython \
@@ -65,7 +66,8 @@ function install_python_and_python_packages() {
 		pytz \
 		redis \
 		wheel \
-		werkzeug==0.16.0
+		werkzeug==0.16.0 \
+		email_validator
 
 	sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 
@@ -124,11 +126,11 @@ function setup_airflow() {
 	sudo tee -a /usr/bin/terraform-aws-airflow <<EOL
 #!/usr/bin/env bash
 if [ "\$AIRFLOW_ROLE" == "SCHEDULER" ]
-then exec airflow scheduler -n 10
+then exec sudo airflow scheduler -n 10
 elif [ "\$AIRFLOW_ROLE" == "WEBSERVER" ]; then
-	exec airflow webserver
+ exec sudo airflow webserver
 elif [ "\$AIRFLOW_ROLE" == "WORKER" ]
-then exec airflow worker
+then exec sudo airflow worker
 else echo "AIRFLOW_ROLE value unknown" && exit 1
 fi
 EOL
