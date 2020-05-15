@@ -1,13 +1,13 @@
 # Airflow-Platform
 A Terraform module for creating an [Apache Airflow](https://airflow.apache.org/) cluster in AWS. This cluster is going to be used for multiple Saint Louis Regional Data Alliance Projects, and is designed to fit within a specific workflow pattern, described below.
 
-#Architecture
+# Architecture
 This module creates numerous AWS resources; the description and diagram provides a general outline, but we encourage organizations to review the module themselves before deploying. The cluster used RDS PostgreSQL for  metadata, s3 for logs, and an Elasticache Redis service as message broker with CeleryExecutor.
 
 ![Airflow - Platform Architecture Diagram](https://app.lucidchart.com/publicSegments/view/0e391ea0-cf7c-47e0-a26e-f78c0d804b11/image.png)
 
 The Airflow cluster is housed on multiple ec-2 instances, the size and number of which can be configured at runtime.
-##Cloud Init
+## Cloud Init
 On startup, each ec2-instance runs [cloud-init.sh](https://github.com/stlrda/Airflow-Platform/blob/master/Startup%20Scripts/cloud-init.sh).  This script installs and configures Airflow and it's requirements, as well as doing some tasks to facilitate the administration and usage of the cluster.
 
 Each server will do the following:
@@ -31,7 +31,7 @@ More information on Terraform's S3 backend configuration can be found on [Terraf
 ## TFVARS
 The .tfvars file overrides other variables, and serves as the user's way to configure their unique version of their cluster. [terraform.tfvars.example](https://github.com/stlrda/Airflow-Platform/blob/master/terraform.tfvars.example) is included to help the user create their own version. IF YOU ARE FORKING THIS REPO, MAKE SURE TO IGNORE YOUR .tfvars FILE SO YOU DON'T SHARE YOUR AWS CREDENTIALS.
 
-#How STLRDA Manages Airflow Projects
+# How STLRDA Manages Airflow Projects
 The Saint Louis Regional Data Alliance's Airflow projects are managed using multiple Github repositories. Each repository is linked to and described below; see individual repositories for more information about their place in our ecosystem.
 
 [Airflow-Platorm](https://github.com/stlrda/Airflow-Platform) sets up and configures our Airflow cluster.
@@ -42,7 +42,7 @@ The Saint Louis Regional Data Alliance's Airflow projects are managed using mult
 
 [Airflow-Workflows](https://github.com/stlrda/Airflow-Workflows) is a template repository for the DAGs, scripts,and other resources associated with a single Airflow-based ELT project.
 
-##Replicating the STLRDA Workflow
+## Replicating the STLRDA Workflow
 1. Fork [Airflow-Admin Tools](https://github.com/stlrda/Airflow-AdminTools).
 2. Modify your version of [clone_and_link.py](https://github.com/stlrda/Airflow-AdminTools/blob/master/scripts/clone_and_link.py) to look at your copy of [projects.csv](https://github.com/stlrda/Airflow-AdminTools/blob/master/resources/projects.csv)   
 3. Clone or fork [Airflow-Platorm](https://github.com/stlrda/Airflow-Platform) and follow the provided instructions for setting up your Airflow cluster. Point the github variables in the .tfvars files to your fork of [Airflow-Admin Tools](https://github.com/stlrda/Airflow-AdminTools).
