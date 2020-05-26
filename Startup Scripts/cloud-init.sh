@@ -168,7 +168,11 @@ function mount_efs() {
 
 function get_admintools() {
   cd /usr/local/airflow/dags
-  git clone ${ADMINTOOLS_URL} AdminTools
+  git clone ${ADMINTOOLS_URL} admintools
+  cd /usr/local/airflow/dags/admintools
+  git checkout ${ADMINTOOLS_BRANCH}
+  LINE="* */5 * * * cd /usr/local/airflow/dags/admintools && git pull"
+  sudo (crontab -u ubuntu -l; echo $LINE ) | sudo crontab -u ubuntu -
 }
 
 function cleanup() {

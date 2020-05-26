@@ -165,6 +165,10 @@ variable "admintools_url"{
   type = string
 }
 
+variable "admintools_branch"{
+  description = "Branch of repository at admintools_url to use"
+  type = string
+}
 //variable "dag_git_repository_url" {
 //  description = "Publicly available github repository url of dag repository."
 //  type = string
@@ -209,6 +213,7 @@ data "template_file" "webserver_provisioner" {
     REDIS_CLUSTER_URL="redis://${aws_elasticache_cluster.airflow_queue.cache_nodes.0.address}:6379/1"
     EFS_ID=aws_efs_file_system.git_dags.id
     ADMINTOOLS_URL = var.admintools_url
+    ADMINTOOLS_BRANCH = var.admintools_branch
   }
 }
 
@@ -240,6 +245,7 @@ data "template_file" "scheduler_provisioner" {
     REDIS_CLUSTER_URL="redis://${aws_elasticache_cluster.airflow_queue.cache_nodes.0.address}:6379/1"
     EFS_ID=aws_efs_file_system.git_dags.id
     ADMINTOOLS_URL = var.admintools_url
+    ADMINTOOLS_BRANCH = var.admintools_branch
   }
 }
 
@@ -271,5 +277,6 @@ data "template_file" "worker_provisioner" {
     REDIS_CLUSTER_URL="redis://${aws_elasticache_cluster.airflow_queue.cache_nodes.0.address}:6379/1"
     EFS_ID=aws_efs_file_system.git_dags.id
     ADMINTOOLS_URL = var.admintools_url
+    ADMINTOOLS_BRANCH = var.admintools_branch
   }
 }
