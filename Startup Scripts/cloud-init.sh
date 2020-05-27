@@ -172,7 +172,7 @@ function get_admintools() {
   cd /usr/local/airflow/dags/admintools
   git checkout ${ADMINTOOLS_BRANCH}
   LINE="* */5 * * * cd /usr/local/airflow/dags/admintools && git pull"
-  sudo (crontab -u ubuntu -l; echo $LINE ) | sudo crontab -u ubuntu -
+  { sudo crontab -l -u ubuntu; echo $LINE; } | sudo crontab -u ubuntu -
 }
 
 function cleanup() {
