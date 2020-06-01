@@ -170,9 +170,8 @@ function get_admintools() {
   cd /usr/local/airflow/dags
   git clone ${ADMINTOOLS_URL} admintools
   cd /usr/local/airflow/dags/admintools
-  git checkout ${ADMINTOOLS_BRANCH}
-  LINE="* */5 * * * cd /usr/local/airflow/dags/admintools && git pull"
-  { sudo crontab -l -u ubuntu; echo $LINE; } | sudo crontab -u ubuntu -
+  LINE="*/5 * * * * cd /usr/local/airflow/dags/admintools && sudo git pull origin master"
+  { echo "$LINE" > mycron; crontab -u ubuntu mycron; rm mycron;}
 }
 
 function cleanup() {
