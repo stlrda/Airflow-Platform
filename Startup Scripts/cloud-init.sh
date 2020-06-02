@@ -86,8 +86,8 @@ function airflow_config() {
   echo AIRFLOW__CORE__LOAD_EXAMPLES=${LOAD_EXAMPLES} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__LOAD_DEFAULTS=${LOAD_EXAMPLES}| sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${DB_USERNAME}:${DB_PASSWORD}@${DB_ENDPOINT}/${DB_DBNAME} | sudo tee -a /tmp/airflow_environment
-  echo AIRFLOW__CORE__REMOTE_BASE_LOG_FOLDER=s3://${S3_BUCKET} | sudo tee -a /tmp/airflow_environment
-  echo AIRFLOW__CORE__REMOTE_LOGGING=true | sudo tee -a /tmp/airflow_environment
+#  echo AIRFLOW__CORE__BASE_LOG_FOLDER=s3://${S3_BUCKET} | sudo tee -a /tmp/airflow_environment
+#  echo AIRFLOW__CORE__REMOTE_LOGGING=true | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__WEBSERVER__WEB_SERVER_PORT=8080 | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__WEBSERVER__RBAC=true | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CELERY__BROKER_URL=${REDIS_CLUSTER_URL} | sudo tee -a /tmp/airflow_environment
@@ -170,9 +170,8 @@ function get_admintools() {
   cd /usr/local/airflow/dags
   git clone ${ADMINTOOLS_URL} admintools
   cd /usr/local/airflow/dags/admintools
-  git checkout ${ADMINTOOLS_BRANCH}
-  LINE="* */5 * * * cd /usr/local/airflow/dags/admintools && git pull"
-  { sudo crontab -l -u ubuntu; echo $LINE; } | sudo crontab -u ubuntu -
+  LINE="*/5 * * * * cd /usr/local/airflow/dags/admintools && sudo git pull origin master"
+  { echo "$LINE" > mycron; crontab -u ubuntu mycron; rm mycron;}
 }
 
 function cleanup() {
