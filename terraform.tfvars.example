@@ -35,5 +35,4 @@ db_password = ""
 
 #GIT VARIABLES--------------------------------------
 dag_git_repository_url=""
-dag_git_repository_directory=""
 dag_git_repository_branch=""
