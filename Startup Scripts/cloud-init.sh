@@ -10,6 +10,7 @@ function install_dependencies() {
 	&& sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -yqq \
   && sudo apt-get install -yqq --no-install-recommends \
 		apt-utils \
+		binutils \
 		bzip2 \
 		curl \
 		freetds-dev \
@@ -25,6 +26,7 @@ function install_dependencies() {
 		libssl-dev \
 		libxml2-dev \
 		libxslt-dev \
+		make \
 		postgresql-client \
 		python \
 		python3 \
@@ -84,13 +86,13 @@ function airflow_config() {
   echo AIRFLOW__CORE__LOAD_EXAMPLES=${LOAD_EXAMPLES} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__LOAD_DEFAULTS=${LOAD_EXAMPLES}| sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${DB_USERNAME}:${DB_PASSWORD}@${DB_ENDPOINT}/${DB_DBNAME} | sudo tee -a /tmp/airflow_environment
-  echo AIRFLOW__CORE__REMOTE_BASE_LOG_FOLDER=s3://${S3_BUCKET} | sudo tee -a /tmp/airflow_environment
-  echo AIRFLOW__CORE__REMOTE_LOGGING=true | sudo tee -a /tmp/airflow_environment
+#  echo AIRFLOW__CORE__BASE_LOG_FOLDER=s3://${S3_BUCKET} | sudo tee -a /tmp/airflow_environment
+#  echo AIRFLOW__CORE__REMOTE_LOGGING=true | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__WEBSERVER__WEB_SERVER_PORT=8080 | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__WEBSERVER__RBAC=true | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CELERY__BROKER_URL=${REDIS_CLUSTER_URL} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CELERY__DEFAULT_QUEUE=${QUEUE_NAME} | sudo tee -a /tmp/airflow_environment
-  echo AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://${DB_DBNAME}:${DB_PASSWORD}@${DB_ENDPOINT}/${DB_DBNAME} | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_ENDPOINT}/${DB_DBNAME} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CELERY__BROKER_TRANSPORT_OPTIONS__REGION=${AWS_REGION} | sudo tee -a /tmp/airflow_environment
   echo [Unit] | sudo tee -a /tmp/airflow.service
   echo Description=Airflow daemon | sudo tee -a /tmp/airflow.service
@@ -109,28 +111,16 @@ function airflow_config() {
   echo AIRFLOW_ROLE=${AIRFLOW_ROLE} | sudo tee -a /etc/environment
 }
 
-function setup_git_dag_source() {
-    #!/usr/bin/env bash
-    cd /usr/local/airflow/
-    rm -rf dags
-    git clone ${DAG_GIT_REPOSITORY_URL} git_dags
-    ln -s /usr/local/airflow/git_dags/${DAG_GIT_REPOSITORY_DIRECTORY} /usr/local/airflow/dags
-    cd /usr/local/airflow/dags
-    git checkout ${DAG_GIT_REPOSITORY_BRANCH}
-
-    line="* */5 * * * cd /usr/local/airflow/dags && git pull"
-    (crontab -l; echo "$line" ) | crontab -
-}
-
 function setup_airflow() {
 	sudo tee -a /usr/bin/terraform-aws-airflow <<EOL
 #!/usr/bin/env bash
 if [ "\$AIRFLOW_ROLE" == "SCHEDULER" ]
-then exec sudo airflow scheduler -n 10
+then exec sudo airflow scheduler -n 10 -p
 elif [ "\$AIRFLOW_ROLE" == "WEBSERVER" ]; then
  exec sudo airflow webserver
+ exec sudo airflow flower
 elif [ "\$AIRFLOW_ROLE" == "WORKER" ]
-then exec sudo airflow worker
+then exec airflow worker -q ${QUEUE_NAME}
 else echo "AIRFLOW_ROLE value unknown" && exit 1
 fi
 EOL
@@ -139,7 +129,6 @@ EOL
 	sudo mkdir -p /var/log/airflow /usr/local/airflow /usr/local/airflow/dags /usr/local/airflow/plugins
 	sudo chmod -R 755 /usr/local/airflow
 	sudo mkdir -p /etc/sysconfig/
-
 	cat /etc/environment | sudo tee -a /tmp/airflow_environment
 	cat /tmp/custom_env | sudo tee -a /tmp/airflow_environment
 	sed 's/^/export /' -- </tmp/airflow_environment | sudo tee -a /etc/environment
@@ -165,6 +154,29 @@ EOL
 	sudo systemctl status airflow.service
 }
 
+function mount_efs() {
+  cd /usr/local/
+  git clone https://github.com/aws/efs-utils
+  cd efs-utils
+  ./build-deb.sh
+  sudo apt-get -y install ./build/amazon-efs-utils*deb
+  cd /usr/local/airflow/
+  sudo mkdir /efs
+  efs_id="${EFS_ID}"
+  sudo mount -t efs $efs_id:/ /efs
+  sudo echo $efs_id:/ /efs efs defaults,_netdev 0 0 >> /etc/fstab
+}
+
+function get_admintools() {
+  cd /usr/local/airflow/dags
+  git clone ${ADMINTOOLS_URL} admintools
+  cd /usr/local/airflow/dags/admintools
+  LINE="*/5 * * * * cd /usr/local/airflow/dags/admintools && sudo git pull origin master"
+  echo "$LINE" > mycron
+  crontab -u ubuntu mycron
+  rm mycron
+}
+
 function cleanup() {
 	apt-get purge --auto-remove -yqq $buildDeps \
 	&& apt-get autoremove -yqq --purge \
@@ -182,7 +194,8 @@ install_dependencies
 install_python_and_python_packages
 airflow_config
 setup_airflow
-setup_git_dag_source
+mount_efs
+get_admintools
 cleanup
 
 END_TIME=$(date +%s)

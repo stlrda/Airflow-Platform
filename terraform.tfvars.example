@@ -38,5 +38,4 @@ db_password = ""
 #This repository will be pulled into the Airflow/dags directory of all airflow servers to facilitate dag management.
 #Intended to be used to start the cluster with a fork of https://github.com/stlrda/Airflow-AdminTools
 dag_git_repository_url=""
-dag_git_repository_directory=""
 dag_git_repository_branch=""

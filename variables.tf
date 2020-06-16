@@ -160,18 +160,13 @@ variable "fernet_key" {
 }
 
 #GIT VARIABLES------------------------------------
-variable "dag_git_repository_url" {
-  description = "Publicly available github repository url of dag repository."
+variable "admintools_url"{
+  description = "URL of AdminTools repository, should be fork of https://github.com/stlrda/Airflow-AdminTools"
   type = string
 }
 
-variable "dag_git_repository_directory" {
-  description = "Sub directory of folder in repository containing DAGs."
-  type = string
-}
-
-variable "dag_git_repository_branch" {
-  description = "Branch of repository to pull every 5 minutes."
+variable "admintools_branch"{
+  description = "Branch of repository at admintools_url to use"
   type = string
 }
 
@@ -198,10 +193,10 @@ data "template_file" "webserver_provisioner" {
     WEBSERVER_PORT = 8080
     QUEUE_NAME = "${var.cluster_name}-queue"
     AIRFLOW_ROLE = "WEBSERVER"
-    DAG_GIT_REPOSITORY_URL = var.dag_git_repository_url
-    DAG_GIT_REPOSITORY_DIRECTORY = var.dag_git_repository_directory
-    DAG_GIT_REPOSITORY_BRANCH = var.dag_git_repository_branch
     REDIS_CLUSTER_URL="redis://${aws_elasticache_cluster.airflow_queue.cache_nodes.0.address}:6379/1"
+    EFS_ID=aws_efs_file_system.git_dags.id
+    ADMINTOOLS_URL = var.admintools_url
+    ADMINTOOLS_BRANCH = var.admintools_branch
   }
 }
 
@@ -227,10 +222,10 @@ data "template_file" "scheduler_provisioner" {
     WEBSERVER_PORT = 8080
     QUEUE_NAME = "${var.cluster_name}-queue"
     AIRFLOW_ROLE = "SCHEDULER"
-    DAG_GIT_REPOSITORY_URL = var.dag_git_repository_url
-    DAG_GIT_REPOSITORY_DIRECTORY = var.dag_git_repository_directory
-    DAG_GIT_REPOSITORY_BRANCH = var.dag_git_repository_branch
     REDIS_CLUSTER_URL="redis://${aws_elasticache_cluster.airflow_queue.cache_nodes.0.address}:6379/1"
+    EFS_ID=aws_efs_file_system.git_dags.id
+    ADMINTOOLS_URL = var.admintools_url
+    ADMINTOOLS_BRANCH = var.admintools_branch
   }
 }
 
@@ -256,9 +251,9 @@ data "template_file" "worker_provisioner" {
     WEBSERVER_PORT = 8080
     QUEUE_NAME = "${var.cluster_name}-queue"
     AIRFLOW_ROLE = "WORKER"
-    DAG_GIT_REPOSITORY_URL=var.dag_git_repository_url
-    DAG_GIT_REPOSITORY_DIRECTORY=var.dag_git_repository_directory
-    DAG_GIT_REPOSITORY_BRANCH=var.dag_git_repository_branch
     REDIS_CLUSTER_URL="redis://${aws_elasticache_cluster.airflow_queue.cache_nodes.0.address}:6379/1"
+    EFS_ID=aws_efs_file_system.git_dags.id
+    ADMINTOOLS_URL = var.admintools_url
+    ADMINTOOLS_BRANCH = var.admintools_branch
   }
 }
