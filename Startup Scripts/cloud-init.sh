@@ -92,7 +92,7 @@ function airflow_config() {
   echo AIRFLOW__WEBSERVER__RBAC=true | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CELERY__BROKER_URL=${REDIS_CLUSTER_URL} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CELERY__DEFAULT_QUEUE=${QUEUE_NAME} | sudo tee -a /tmp/airflow_environment
-  echo AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://${DB_DBNAME}:${DB_PASSWORD}@${DB_ENDPOINT}/${DB_DBNAME} | sudo tee -a /tmp/airflow_environment
+  echo AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_ENDPOINT}/${DB_DBNAME} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CELERY__BROKER_TRANSPORT_OPTIONS__REGION=${AWS_REGION} | sudo tee -a /tmp/airflow_environment
   echo [Unit] | sudo tee -a /tmp/airflow.service
   echo Description=Airflow daemon | sudo tee -a /tmp/airflow.service
@@ -115,11 +115,12 @@ function setup_airflow() {
 	sudo tee -a /usr/bin/terraform-aws-airflow <<EOL
 #!/usr/bin/env bash
 if [ "\$AIRFLOW_ROLE" == "SCHEDULER" ]
-then exec sudo airflow scheduler -n 10
+then exec sudo airflow scheduler -n 10 -p
 elif [ "\$AIRFLOW_ROLE" == "WEBSERVER" ]; then
  exec sudo airflow webserver
+ exec sudo airflow flower
 elif [ "\$AIRFLOW_ROLE" == "WORKER" ]
-then exec sudo airflow worker
+then exec airflow worker -q ${QUEUE_NAME}
 else echo "AIRFLOW_ROLE value unknown" && exit 1
 fi
 EOL
