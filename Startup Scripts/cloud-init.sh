@@ -86,14 +86,20 @@ function airflow_config() {
   echo AIRFLOW__CORE__LOAD_EXAMPLES=${LOAD_EXAMPLES} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__LOAD_DEFAULTS=${LOAD_EXAMPLES}| sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${DB_USERNAME}:${DB_PASSWORD}@${DB_ENDPOINT}/${DB_DBNAME} | sudo tee -a /tmp/airflow_environment
-#  echo AIRFLOW__CORE__BASE_LOG_FOLDER=s3://${S3_BUCKET} | sudo tee -a /tmp/airflow_environment
-#  echo AIRFLOW__CORE__REMOTE_LOGGING=true | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__WEBSERVER__WEB_SERVER_PORT=8080 | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__WEBSERVER__RBAC=true | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CELERY__BROKER_URL=${REDIS_CLUSTER_URL} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CELERY__DEFAULT_QUEUE=${QUEUE_NAME} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_ENDPOINT}/${DB_DBNAME} | sudo tee -a /tmp/airflow_environment
   echo AIRFLOW__CELERY__BROKER_TRANSPORT_OPTIONS__REGION=${AWS_REGION} | sudo tee -a /tmp/airflow_environment
+
+    #Set up remote logging
+#  echo AIRFLOW__CORE__REMOTE_BASE_LOG_FOLDER=s3://${S3_BUCKET} | sudo tee -a /tmp/airflow_environment
+#  echo AIRFLOW__CORE__BASE_LOG_FOLDER=s3://${S3_BUCKET} | sudo tee -a /tmp/airflow_environment
+#  echo AIRFLOW__CORE__REMOTE_LOGGING=TRUE | sudo tee -a /tmp/airflow_environment
+#  echo AIRFLOW__CORE__REMOTE_LOG_CONN_ID=aws_default | sudo tee -a /tmp/airflow_environment
+#  echo AIRFLOW__CORE__ENCRYPT_S3_LOGS=FALSE
+
   echo [Unit] | sudo tee -a /tmp/airflow.service
   echo Description=Airflow daemon | sudo tee -a /tmp/airflow.service
   echo After=network.target | sudo tee -a /tmp/airflow.service
@@ -109,6 +115,9 @@ function airflow_config() {
   echo [Install] | sudo tee -a /tmp/airflow.service
   echo WantedBy=multi-user.target | sudo tee -a /tmp/airflow.service
   echo AIRFLOW_ROLE=${AIRFLOW_ROLE} | sudo tee -a /etc/environment
+
+
+
 }
 
 function setup_airflow() {
@@ -120,7 +129,7 @@ elif [ "\$AIRFLOW_ROLE" == "WEBSERVER" ]; then
  exec sudo airflow webserver
  exec sudo airflow flower
 elif [ "\$AIRFLOW_ROLE" == "WORKER" ]
-then exec airflow worker -q ${QUEUE_NAME}
+then exec airflow worker
 else echo "AIRFLOW_ROLE value unknown" && exit 1
 fi
 EOL
