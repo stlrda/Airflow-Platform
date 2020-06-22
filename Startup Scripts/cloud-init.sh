@@ -177,10 +177,10 @@ function mount_efs() {
 }
 
 function get_admintools() {
-  cd /usr/local/airflow/dags
+  cd /usr/local/airflow/dags/efs
   git clone ${ADMINTOOLS_URL} admintools
-  cd /usr/local/airflow/dags/admintools
-  LINE="*/5 * * * * cd /usr/local/airflow/dags/admintools && sudo git pull origin master"
+  cd /usr/local/airflow/dags/efs/admintools
+  LINE="*/5 * * * * cd /usr/local/airflow/dags/efs/admintools && sudo git pull origin master"
   echo "$LINE" > mycron
   crontab -u ubuntu mycron
   rm mycron
