@@ -57,8 +57,13 @@ resource "aws_iam_policy" "ec2_health_check_policy" {
             "Effect": "Allow",
             "Action": "s3:*",
             "Resource": "*"
+        },
+        {
+          "Sid":"ec2messages",
+          "Effect": "Allow",
+          "Action": "ec2messages:*",
+          "Resource": "*"
         }
-
     ]
 }
 EOF
