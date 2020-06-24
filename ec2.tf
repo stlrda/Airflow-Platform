@@ -91,33 +91,6 @@ resource "aws_instance" "airflow_webserver" {
   }
   depends_on = [aws_db_instance.airflow_database]
   user_data = data.template_file.webserver_provisioner.rendered
-
-//  provisioner "file" {
-//    content = data.template_file.config_provisioner.rendered
-//    destination = "/tmp/airflow.cfg"
-//
-//    connection {
-//      host = self.public_ip
-//      agent = false
-//      type = "ssh"
-//      user = "ubuntu"
-//      private_key = file(var.private_key_path)
-//    }
-//  }
-//
-//  provisioner "remote-exec" {
-//    inline = [
-//      "sleep 5m",
-//      "sudo mv -f /tmp/airflow.cfg /usr/local/airflow/"]
-//
-//    connection {
-//      host = self.public_ip
-//      agent = false
-//      type = "ssh"
-//      user = "ubuntu"
-//      private_key = file(var.private_key_path)
-//    }
-//  }
 }
 
 resource "aws_instance" "airflow_scheduler" {
@@ -140,34 +113,6 @@ resource "aws_instance" "airflow_scheduler" {
   }
   depends_on = [aws_db_instance.airflow_database]
   user_data= data.template_file.scheduler_provisioner.rendered
-
-//  provisioner "file" {
-//    content = data.template_file.config_provisioner.rendered
-//    destination = "/tmp/airflow.cfg"
-//
-//    connection {
-//      host = self.public_ip
-//      agent = false
-//      type = "ssh"
-//      user = "ubuntu"
-//      private_key = file(var.private_key_path)
-//    }
-//  }
-//
-////  provisioner "remote-exec" {
-////    inline = [
-////      "sleep 5m",
-////      "sudo mv -f /tmp/airflow.cfg /usr/local/airflow/"]
-////
-////    connection {
-////      host = self.public_ip
-////      agent = false
-////      type = "ssh"
-////      user = "ubuntu"
-////      private_key = file(var.private_key_path)
-////    }
-////  }
-
 }
 
 resource "aws_instance" "airflow_worker" {
@@ -191,30 +136,4 @@ resource "aws_instance" "airflow_worker" {
   depends_on = [aws_db_instance.airflow_database]
   user_data= data.template_file.worker_provisioner.rendered
 
-//  provisioner "file" {
-//    content = data.template_file.config_provisioner.rendered
-//    destination = "/tmp/airflow.cfg"
-//
-//    connection {
-//      host = self.public_ip
-//      agent = false
-//      type = "ssh"
-//      user = "ubuntu"
-//      private_key = file(var.private_key_path)
-//    }
-//  }
-//
-//  provisioner "remote-exec" {
-//    inline = [
-//      "sleep 5m",
-//      "sudo mv -f /tmp/airflow.cfg /usr/local/airflow/"]
-//
-//    connection {
-//      host = self.public_ip
-//      agent = false
-//      type = "ssh"
-//      user = "ubuntu"
-//      private_key = file(var.private_key_path)
-//    }
-//  }
 }
