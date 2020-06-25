@@ -48,7 +48,13 @@ resource "aws_iam_policy" "ec2_health_check_policy" {
         {
             "Sid": "SSMAction",
             "Effect": "Allow",
-            "Action": "ssm:UpdateInstanceInformation",
+            "Action": "ssm:*",
+            "Resource": "*"
+        },
+        {
+            "Sid": "SSMmessages",
+            "Effect": "Allow",
+            "Action": "ssmmessages:*",
             "Resource": "*"
         },
         {
