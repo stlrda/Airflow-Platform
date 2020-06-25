@@ -33,7 +33,6 @@ resource "aws_iam_instance_profile" "airflow_profile" {
 
 resource "aws_iam_role_policy_attachment" "s3_policy" {
   role       = aws_iam_instance_profile.airflow_profile.name
-//  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
   policy_arn = aws_iam_policy.ec2_health_check_policy.arn
 }
 
@@ -57,8 +56,13 @@ resource "aws_iam_policy" "ec2_health_check_policy" {
             "Effect": "Allow",
             "Action": "s3:*",
             "Resource": "*"
+        },
+        {
+          "Sid":"ec2messages",
+          "Effect": "Allow",
+          "Action": "ec2messages:*",
+          "Resource": "*"
         }
-
     ]
 }
 EOF
