@@ -33,7 +33,6 @@ resource "aws_iam_instance_profile" "airflow_profile" {
 
 resource "aws_iam_role_policy_attachment" "s3_policy" {
   role       = aws_iam_instance_profile.airflow_profile.name
-//  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
   policy_arn = aws_iam_policy.ec2_health_check_policy.arn
 }
 
@@ -46,9 +45,10 @@ resource "aws_iam_policy" "ec2_health_check_policy" {
 {
     "Version": "2012-10-17",
     "Statement": [
-        {
+           {
             "Sid": "SSMAction",
             "Effect": "Allow",
+            "Action": "ssm:UpdateInstanceInformation",
             "Action": [
                   "ssm:UpdateInstanceInformation",
                   "ssmmessages:CreateControlChannel",

@@ -173,17 +173,17 @@ function mount_efs() {
   ./build-deb.sh
   sudo apt-get -y install ./build/amazon-efs-utils*deb
   cd /usr/local/airflow/
-  sudo mkdir /efs
+  sudo mkdir /usr/local/airflow/dags/efs
   efs_id="${EFS_ID}"
-  sudo mount -t efs $efs_id:/ /efs
-  sudo echo $efs_id:/ /efs efs defaults,_netdev 0 0 >> /etc/fstab
+  sudo mount -t efs $efs_id:/ /usr/local/airflow/dags/efs
+  sudo echo $efs_id:/ /usr/local/airflow/dags/efs efs defaults,_netdev 0 0 >> /etc/fstab
 }
 
 function get_admintools() {
-  cd /usr/local/airflow/dags
+  cd /usr/local/airflow/dags/efs
   git clone ${ADMINTOOLS_URL} admintools
-  cd /usr/local/airflow/dags/admintools
-  LINE="*/5 * * * * cd /usr/local/airflow/dags/admintools && sudo git pull origin master"
+  cd /usr/local/airflow/dags/efs/admintools
+  LINE="*/5 * * * * cd /usr/local/airflow/dags/efs/admintools && sudo git pull origin master"
   echo "$LINE" > mycron
   crontab -u ubuntu mycron
   rm mycron

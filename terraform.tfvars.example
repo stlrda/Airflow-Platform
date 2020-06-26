@@ -28,11 +28,14 @@ worker_instance_type = "t3.small"
 number_of_workers  = 1
 
 #DB VARIABLES------------------------------------
+#These variables define the Airflow metadata database.
 db_instance_type = "db.t2.micro"
 db_dbname = "airflow"
 db_username = ""
 db_password = ""
 
 #GIT VARIABLES--------------------------------------
+#This repository will be pulled into the Airflow/dags directory of all airflow servers to facilitate dag management.
+#Intended to be used to start the cluster with a fork of https://github.com/stlrda/Airflow-AdminTools
 dag_git_repository_url=""
 dag_git_repository_branch=""
