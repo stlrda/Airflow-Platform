@@ -123,16 +123,13 @@ function airflow_config() {
 function setup_airflow() {
 	sudo tee -a /usr/bin/terraform-aws-airflow <<EOL
 #!/usr/bin/env bash
-if [ "\$AIRFLOW_ROLE" == "SCHEDULER" ]; then
-  exec sudo airflow scheduler -n 10 -p
-  exec airflow upgradedb
+if [ "\$AIRFLOW_ROLE" == "SCHEDULER" ]
+then exec sudo airflow scheduler -n 10 -p
 elif [ "\$AIRFLOW_ROLE" == "WEBSERVER" ]; then
  exec sudo airflow webserver
  exec sudo airflow flower
- exec airflow initdb
-elif [ "\$AIRFLOW_ROLE" == "WORKER" ]; then
-  exec airflow worker
-  exec airflow upgradedb
+elif [ "\$AIRFLOW_ROLE" == "WORKER" ]
+then exec airflow worker
 else echo "AIRFLOW_ROLE value unknown" && exit 1
 fi
 EOL
@@ -149,11 +146,11 @@ EOL
 
 	source /etc/environment
 
-#	if [ "$AIRFLOW__CORE__LOAD_DEFAULTS" = false ]; then
-#			airflow upgradedb
-#	else
-#			airflow initdb
-#	fi
+	if [ "$AIRFLOW__CORE__LOAD_DEFAULTS" = false ]; then
+			airflow upgradedb
+	else
+			airflow initdb
+	fi
 
 	if [ "$AIRFLOW__WEBSERVER__RBAC" = true ]; then
 		airflow create_user -r Admin -u "${ADMIN_USERNAME}" -f "${ADMIN_NAME}" -l "${ADMIN_LASTNAME}" -e "${ADMIN_EMAIL}" -p "${ADMIN_PASSWORD}"

@@ -45,17 +45,16 @@ resource "aws_iam_policy" "ec2_health_check_policy" {
 {
     "Version": "2012-10-17",
     "Statement": [
-           {
+        {
             "Sid": "SSMAction",
             "Effect": "Allow",
-            "Action": "ssm:UpdateInstanceInformation",
-            "Action": [
-                  "ssm:UpdateInstanceInformation",
-                  "ssmmessages:CreateControlChannel",
-                  "ssmmessages:CreateDataChannel",
-                  "ssmmessages:OpenControlChannel",
-                  "ssmmessages:OpenDataChannel"
-              ],
+            "Action": "ssm:*",
+            "Resource": "*"
+        },
+        {
+            "Sid": "SSMmessages",
+            "Effect": "Allow",
+            "Action": "ssmmessages:*",
             "Resource": "*"
         },
         {
@@ -65,10 +64,10 @@ resource "aws_iam_policy" "ec2_health_check_policy" {
             "Resource": "*"
         },
         {
-            "Sid": "Messages",
-            "Effect": "Allow",
-            "Action": "ec2messages:*",
-            "Resource": "*"
+          "Sid":"ec2messages",
+          "Effect": "Allow",
+          "Action": "ec2messages:*",
+          "Resource": "*"
         }
     ]
 }
